@@ -1,0 +1,110 @@
+# Multi-stage Dockerfile for Enhanced Crawler v2
+# Optimized for performance and minimal image size
+
+# Stage 1: Build dependencies
+FROM python:3.11-slim as builder
+
+# Set build arguments
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies for building
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    libffi-dev \
+    libssl-dev \
+    pkg-config \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy requirements first for better caching
+COPY requirements.txt /tmp/requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Stage 2: Runtime image
+FROM python:3.11-slim as runtime
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    CRAWL_ENV=production
+
+# Install runtime system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    chromium \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copy virtual environment from builder stage
+COPY --from=builder /opt/venv /opt/venv
+
+# Create app user for security
+RUN groupadd -r crawler && useradd -r -g crawler crawler
+
+# Create application directory
+WORKDIR /app
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/data /tmp/crawler && \
+    chown -R crawler:crawler /app /tmp/crawler
+
+# Copy application code
+COPY --chown=crawler:crawler . /app/
+
+# Set Playwright environment
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Install Playwright browsers (as crawler user)
+USER crawler
+RUN python -m playwright install-deps || true
+RUN python -m playwright install chromium || true
+
+# Health check script
+COPY --chown=crawler:crawler <<EOF /app/healthcheck.py
+#!/usr/bin/env python3
+import asyncio
+import sys
+import aiohttp
+
+async def health_check():
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get('http://localhost:8080/health', timeout=5) as response:
+                if response.status == 200:
+                    return True
+        return False
+    except:
+        return False
+
+if __name__ == '__main__':
+    result = asyncio.run(health_check())
+    sys.exit(0 if result else 1)
+EOF
+
+# Make healthcheck executable
+USER root
+RUN chmod +x /app/healthcheck.py
+USER crawler
+
+# Expose port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python /app/healthcheck.py
+
+# Default command
+CMD ["python", "-m", "crawler_layer.main"]

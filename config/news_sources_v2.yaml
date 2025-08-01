@@ -1,0 +1,106 @@
+# Enhanced news sources configuration
+# Optimized for multi-stage hybrid crawler
+
+sources:
+  # Tier 1: High priority financial news sites
+  vnexpress:
+    name: "vnexpress"
+    domain: "vnexpress.net"
+    priority: 10
+    enabled: true
+    profile_file: "vnexpress.yaml"
+    
+  cafef:
+    name: "cafef" 
+    domain: "cafef.vn"
+    priority: 9
+    enabled: true
+    profile_file: "cafef.yaml"
+    
+  # Tier 2: General business news
+  dantri:
+    name: "dantri"
+    domain: "dantri.com.vn"
+    priority: 8
+    enabled: true
+    profile_file: "dantri.yaml"
+    
+  vietnamnet:
+    name: "vietnamnet"
+    domain: "vietnamnet.vn"
+    priority: 7
+    enabled: true
+    rss_feeds:
+      - "https://vietnamnet.vn/rss/kinh-doanh.rss"
+      - "https://vietnamnet.vn/rss/chung-khoan-bat-dong-san.rss"
+    strategy: "scrapy"
+    
+  thanhnien:
+    name: "thanhnien"
+    domain: "thanhnien.vn"
+    priority: 7
+    enabled: true
+    rss_feeds:
+      - "https://thanhnien.vn/rss/kinh-te.rss"
+    strategy: "scrapy"
+    
+  tuoitre:
+    name: "tuoitre"
+    domain: "tuoitre.vn"
+    priority: 7
+    enabled: true
+    rss_feeds:
+      - "https://tuoitre.vn/rss/kinh-doanh.rss"
+    strategy: "scrapy"
+
+# Global crawler settings
+global_settings:
+  # Link discovery settings
+  link_discovery:
+    max_links_per_source: 100
+    link_cache_ttl: 3600  # 1 hour
+    duplicate_threshold: 0.8
+    
+  # Content extraction settings  
+  content_extraction:
+    batch_size: 10
+    max_concurrent_extractions: 20
+    extraction_timeout: 30
+    
+  # Quality control
+  quality_control:
+    min_content_length: 100
+    min_title_length: 10
+    max_title_length: 300
+    quality_score_threshold: 3.0
+    
+  # Rate limiting
+  rate_limiting:
+    default_delay: 1.0
+    respect_crawl_delay: true
+    max_requests_per_minute: 60
+    
+# Content categories and keywords
+content_categories:
+  financial:
+    keywords: ["chứng khoán", "cổ phiếu", "đầu tư", "tài chính", "ngân hàng", "vàng", "forex", "crypto"]
+    priority_bonus: 5.0
+    
+  business:
+    keywords: ["kinh doanh", "doanh nghiệp", "công ty", "thị trường", "xuất khẩu", "gdp"]
+    priority_bonus: 3.0
+    
+  real_estate:
+    keywords: ["bất động sản", "nhà đất", "căn hộ", "chung cư"]
+    priority_bonus: 4.0
+    
+  technology:
+    keywords: ["công nghệ", "startup", "tech", "ai", "blockchain"]
+    priority_bonus: 2.0
+
+# Performance targets
+performance_targets:
+  link_discovery_speed: 1000  # links per 30 seconds
+  content_extraction_speed: 100  # articles per minute
+  success_rate: 0.95
+  memory_usage_mb: 2000

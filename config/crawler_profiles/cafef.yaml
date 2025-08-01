@@ -1,0 +1,58 @@
+# CafeF.vn crawler configuration
+# Mixed static/dynamic content - use Scrapy with some caution
+
+name: "cafef"
+domain: "cafef.vn"
+strategy: "scrapy"  # Mostly static, some dynamic elements
+
+# RSS feeds for link discovery
+rss_feeds:
+  - "https://cafef.vn/rss/thi-truong-chung-khoan.rss"
+  - "https://cafef.vn/rss/dau-tu.rss" 
+  - "https://cafef.vn/rss/tai-chinh-ngan-hang.rss"
+  - "https://cafef.vn/rss/bat-dong-san.rss"
+  - "https://cafef.vn/rss/hang-hoa.rss"
+  - "https://cafef.vn/rss/vi-mo-doanh-nghiep.rss"
+
+# Content extraction selectors
+selectors:
+  title: "h1, .title"
+  content: ".detail-content, .content"
+  author: ".author, .byline"
+  publish_time: ".pdate, .date"
+  description: ".sapo, .description"
+
+# Site characteristics
+site_config:
+  is_spa: false
+  has_dynamic_content: true
+  requires_js: false
+  anti_bot_protection: false
+
+# Crawling parameters (more conservative due to dynamic content)
+crawl_settings:
+  delay: 2.0  # Slower crawling for stability
+  max_concurrent: 3
+  timeout: 20
+  retry_attempts: 3
+
+# Custom headers
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Accept-Language: "vi-VN,vi;q=0.9,en;q=0.8"
+  Referer: "https://cafef.vn/"
+
+# Content quality rules
+quality_rules:
+  min_word_count: 150
+  min_title_length: 15
+  max_title_length: 180
+  required_content_indicators: ["chứng khoán", "đầu tư", "tài chính"]
+
+# Priority scoring
+priority_config:
+  domain_authority: 8.0
+  financial_keywords_bonus: 6.0
+  business_keywords_bonus: 4.0
+  recency_bonus_hours: 8

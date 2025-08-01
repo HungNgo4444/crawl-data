@@ -1,0 +1,56 @@
+# Dantri.com.vn crawler configuration  
+# Dynamic content requires hybrid approach
+
+name: "dantri"
+domain: "dantri.com.vn"
+strategy: "hybrid"  # Mixed content, some JS required
+
+# RSS feeds for link discovery
+rss_feeds:
+  - "https://dantri.com.vn/kinh-doanh.rss"
+  - "https://dantri.com.vn/bat-dong-san.rss"
+  - "https://dantri.com.vn/chung-khoan.rss"
+  - "https://dantri.com.vn/tai-chinh-ngan-hang.rss"
+
+# Content extraction selectors
+selectors:
+  title: "h1.title-page, h1.article-title"
+  content: ".singular-content, .article-content"
+  author: ".author-name, .author"
+  publish_time: ".news-time, .time"
+  description: ".article-excerpt, .sapo"
+
+# Site characteristics
+site_config:
+  is_spa: false
+  has_dynamic_content: true
+  requires_js: true  # Some content loaded via JS
+  anti_bot_protection: false
+
+# Crawling parameters (slower due to JS requirements)
+crawl_settings:
+  delay: 1.5
+  max_concurrent: 4
+  timeout: 25
+  retry_attempts: 2
+
+# Custom headers
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Accept-Language: "vi-VN,vi;q=0.9,en;q=0.8"
+  Referer: "https://dantri.com.vn/"
+
+# Content quality rules
+quality_rules:
+  min_word_count: 120
+  min_title_length: 12
+  max_title_length: 160
+  required_content_indicators: ["kinh tế", "doanh nghiệp"]
+
+# Priority scoring
+priority_config:
+  domain_authority: 8.0
+  financial_keywords_bonus: 4.0
+  business_keywords_bonus: 5.0
+  recency_bonus_hours: 12

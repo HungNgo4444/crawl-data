@@ -1,0 +1,57 @@
+# VnExpress.net crawler configuration
+# Optimized for static content with fast Scrapy strategy
+
+name: "vnexpress"
+domain: "vnexpress.net"
+strategy: "scrapy"  # Static content - use fast Scrapy engine
+
+# RSS feeds for link discovery
+rss_feeds:
+  - "https://vnexpress.net/rss/kinh-doanh.rss"
+  - "https://vnexpress.net/rss/chung-khoan.rss"
+  - "https://vnexpress.net/rss/bat-dong-san.rss"
+  - "https://vnexpress.net/rss/ebank.rss"
+  - "https://vnexpress.net/rss/hang-hoa.rss"
+  - "https://vnexpress.net/rss/vi-mo.rss"
+
+# Content extraction selectors
+selectors:
+  title: "h1.title-detail"
+  content: ".fck_detail"
+  author: ".author_mail a"
+  publish_time: ".date"
+  description: ".description"
+
+# Site characteristics
+site_config:
+  is_spa: false
+  has_dynamic_content: false
+  requires_js: false
+  anti_bot_protection: false
+
+# Crawling parameters
+crawl_settings:
+  delay: 1.0  # seconds between requests
+  max_concurrent: 5
+  timeout: 15
+  retry_attempts: 3
+
+# Custom headers
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Accept-Language: "vi-VN,vi;q=0.9,en;q=0.8"
+
+# Content quality rules
+quality_rules:
+  min_word_count: 100
+  min_title_length: 10
+  max_title_length: 200
+  required_content_indicators: ["kinh doanh", "tài chính", "chứng khoán"]
+  
+# Priority scoring
+priority_config:
+  domain_authority: 10.0
+  financial_keywords_bonus: 5.0
+  business_keywords_bonus: 3.0
+  recency_bonus_hours: 6

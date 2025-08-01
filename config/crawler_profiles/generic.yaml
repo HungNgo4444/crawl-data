@@ -1,0 +1,51 @@
+# Generic crawler configuration
+# Safe defaults for unknown sites
+
+name: "generic"
+domain: "_default"
+strategy: "playwright"  # Safe approach for unknown sites
+
+# No RSS feeds for generic profile
+rss_feeds: []
+
+# Generic content extraction selectors (multiple fallbacks)
+selectors:
+  title: "h1, .title, .headline, .post-title, .article-title"
+  content: ".content, .article-content, .post-content, .entry-content, article, .main-content"
+  author: ".author, .byline, .author-name, .post-author"
+  publish_time: ".date, .time, .published, .post-date, .article-date"
+  description: ".description, .excerpt, .summary, .sapo"
+
+# Site characteristics (conservative defaults)
+site_config:
+  is_spa: false
+  has_dynamic_content: true
+  requires_js: true  # Be safe with unknown sites
+  anti_bot_protection: false
+
+# Crawling parameters (very conservative)
+crawl_settings:
+  delay: 2.0
+  max_concurrent: 2
+  timeout: 30
+  retry_attempts: 1
+
+# Generic headers
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"  
+  Accept-Language: "vi-VN,vi;q=0.9,en;q=0.8"
+
+# Relaxed content quality rules
+quality_rules:
+  min_word_count: 50
+  min_title_length: 5
+  max_title_length: 300
+  required_content_indicators: []
+
+# Low priority scoring for unknown sites
+priority_config:
+  domain_authority: 1.0
+  financial_keywords_bonus: 2.0
+  business_keywords_bonus: 1.0
+  recency_bonus_hours: 24
