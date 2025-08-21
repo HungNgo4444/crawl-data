@@ -125,7 +125,9 @@
       "Bash(del scriptstest_multiple_crawl4ai_strategies.py)",
       "Bash(del \"F:\\Crawl data\\apps\\enhanced-crawler-worker\\src\\workers\\crawl4ai_content_extractor_utf8.py\")",
       "Bash(git remote set-url:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",

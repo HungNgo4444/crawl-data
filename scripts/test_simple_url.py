@@ -61,7 +61,7 @@ async def main():
     # Initialize the crawler
     async with AsyncWebCrawler(config=browser_config) as crawler:
         # Set the URL you want to crawl
-        url = "https://vnexpress.net/muong-thanh-se-day-nhanh-tien-do-du-an-tai-huyen-thanh-oai-cu-4929824.html"
+        url = "https://tuoitre.vn/tuoi-tre-khong-tu-bo-su-menh-lam-dieu-tot-cho-xa-hoi-cho-dat-nuoc-20250821083640078.htm"
         
         print(f"Testing extraction for: {url}")
         print("=" * 80)

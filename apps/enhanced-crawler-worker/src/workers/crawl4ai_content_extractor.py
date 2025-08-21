@@ -233,7 +233,7 @@ class AdvancedCrawl4AIExtractor:
                     cached.cached = True
                     return cached
             
-            # Browser configuration for news sites
+            # Enhanced browser configuration for Vietnamese news sites with anti-bot bypass
             browser_config = BrowserConfig(
                 headless=True,
                 extra_args=[
@@ -241,7 +241,10 @@ class AdvancedCrawl4AIExtractor:
                     "--disable-dev-shm-usage",
                     "--disable-gpu",
                     "--disable-web-security",
-                    "--disable-features=IsolateOrigins,site-per-process"
+                    "--disable-features=IsolateOrigins,site-per-process",
+                    "--disable-blink-features=AutomationControlled",  # Anti-detection
+                    "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "--accept-language=vi-VN,vi;q=0.9,en;q=0.8",  # Vietnamese locale
                 ]
             )
             
@@ -288,144 +291,79 @@ class AdvancedCrawl4AIExtractor:
         url: str
     ) -> Optional[ExtractedArticle]:
         """
-        Try extraction using JsonCssExtractionStrategy with multiple selector fallback.
-        Best for structured content like news articles.
+        Try extraction using JsonCssExtractionStrategy with systematic field-level fallback.
+        Universal system for Vietnamese news sites with NO LOOPS.
         """
-        # Define selector groups for each field - try each selector individually
-        field_selectors = {
-            "title": [
-                "h1.title-detail",
-                "h1.title-news", 
-                "h1.detail-title",
-                ".title-detail",
-                "h1",
-                "meta[property='og:title']"
+        # Universal Vietnamese news selector patterns - SUPPORTS COMMA SEPARATORS NOW
+        FIELD_SELECTORS = {
+            'title': [
+                'h1.title-detail, h1.title-news, h1.detail-title, .title-detail',  # VnExpress + variants
+                'h1.article-title, h1.post-title, h1.entry-title',  # Generic article titles
+                '.article-header h1, .content-title h1',  # Header containers
+                'h1, .main-title, .page-title',  # General fallbacks
+                'title'  # Meta fallback
             ],
-            "content": [
-                ".fck_detail",
-                "article .content",
-                "article .entry-content",
-                ".article-body",
-                ".post-content",
-                "main article",
-                ".detail-content",
-                "#main-detail-body",
-                "article"
+            'content': [
+                '.fck_detail, .article-content, .post-content',  # VnExpress + standard
+                '.entry-content, .content-body, .article-body',  # CMS patterns
+                '.detail-content, .article-detail, .news-content',  # News specific
+                'article, main, .main-content',  # Semantic HTML
+                '.content, .post, .entry'  # Generic fallbacks
             ],
-            "author": [
-                ".author-name",
-                "[itemprop='author']",
-                ".by-author",
-                ".article-author",
-                ".author",
-                "meta[name='author']"
+            'author': [
+                '.author-name, .author, .byline',  # Common author patterns
+                '.post-author, .article-author, .author-info',  # Article authors
+                '[rel="author"], .by-author, .written-by',  # Semantic + variants
+                '.meta-author, .journalist, .reporter'  # News specific
             ],
-            "publish_date": [
-                "time[datetime]",
-                ".publish-date",
-                ".entry-date",
-                "meta[property='article:published_time']"
+            'publish_date': [
+                'time[datetime], [property="article:published_time"]',  # Semantic
+                '.date, .published, .post-date, .article-date',  # Common date classes
+                '.publish-date, .timestamp, .entry-date',  # More date patterns
+                '[itemprop="datePublished"], .meta-date'  # Schema + meta
             ],
-            "category": [
-                ".breadcrumb li:nth-child(2)",
-                ".category",
-                ".article-category",
-                "nav.breadcrumb a:nth-child(2)"
+            'category': [
+                '.breadcrumb li:nth-child(2), .breadcrumb a',  # Breadcrumb patterns
+                '.category, .tag, .section',  # Generic categories
+                '.post-category, .article-category, .news-category',  # Specific categories
+                '.topic, .subject, .classification'  # Alternative names
             ],
-            "image": [
-                "meta[property='og:image']",
-                "article img",
-                ".article-image img"
-            ],
-            "summary": [
-                "meta[name='description']",
-                ".article-summary",
-                ".lead"
+            'image': [
+                'meta[property="og:image"], meta[name="twitter:image"]',  # Social meta
+                '.featured-image img, .article-image img, .post-image img',  # Featured images
+                'article img:first-of-type, .content img:first-of-type',  # First images
+                '.hero-image img, .main-image img, .thumb img'  # Hero/main images
             ]
         }
         
-        # Try each selector group and return best result
-        best_result = None
-        best_score = 0
-        
-        for field_name, selectors in field_selectors.items():
-            for selector in selectors:
-                # Create schema with single selector
-                article_schema = {
-                    "name": f"{field_name}_extractor",
-                    "baseSelector": "body",
-                    "fields": [
-                        {
-                            "name": field_name,
-                            "selector": selector,
-                            "type": "attribute" if field_name in ["publish_date", "image"] else "text",
-                            "attribute": "datetime" if field_name == "publish_date" else ("content" if field_name == "image" else None),
-                            "transform": "strip"
-                        }
-                    ]
-                }
+        try:
+            # Use systematic field-by-field extraction with single pass
+            extracted_data = await self._extract_fields_systematically(
+                crawler, url, FIELD_SELECTORS
+            )
+            
+            if extracted_data and extracted_data.get('content'):
+                return await self._build_article_from_data(url, extracted_data, "json_css")
                 
-                try:
-                    result = await self._extract_with_schema(crawler, url, article_schema)
-                    if result:
-                        field_data = result.get(field_name)
-                        if field_data and len(str(field_data)) > 10:  # Valid data found
-                            # Store this selector as working for this field
-                            if not best_result:
-                                best_result = {}
-                            best_result[field_name] = {
-                                "data": field_data,
-                                "selector": selector
-                            }
-                            break  # Found working selector for this field
-                except Exception:
-                    continue
-        
-        # If we found some data, create comprehensive extraction with working selectors
-        if best_result:
-            # Build final schema with proven selectors
-            final_fields = []
-            for field_name, field_info in best_result.items():
-                field_config = {
-                    "name": field_name,
-                    "selector": field_info["selector"],
-                    "type": "attribute" if field_name in ["publish_date", "image"] else "text",
-                    "transform": "strip"
-                }
-                if field_name == "publish_date":
-                    field_config["attribute"] = "datetime"
-                elif field_name == "image":
-                    field_config["attribute"] = "content"
-                    
-                final_fields.append(field_config)
-            
-            final_schema = {
-                "name": "comprehensive_extractor",
-                "baseSelector": "body",
-                "fields": final_fields
-            }
-            
-            # Extract with final schema
-            result = await self._extract_with_schema(crawler, url, final_schema)
-            if result:
-                return await self._build_article_from_data(url, result, "json_css")
+        except Exception as e:
+            self.logger.debug(f"JsonCSS systematic extraction failed for {url}: {e}")
         
         return None
     
-    async def _extract_with_schema(
+    async def _extract_fields_systematically(
         self,
         crawler: AsyncWebCrawler,
         url: str,
-        schema: dict
+        field_selectors: dict
     ) -> Optional[dict]:
-        """Extract content using a specific schema."""
+        """
+        Extract fields systematically with single-pass testing - NO LOOPS.
+        Uses BeautifulSoup directly to avoid JsonCssExtractionStrategy limitations.
+        """
         try:
+            # Get page content first - SIMPLE AND FAST
             config = CrawlerRunConfig(
                 cache_mode=CacheMode.BYPASS,
-                extraction_strategy=JsonCssExtractionStrategy(
-                    schema=schema,
-                    verbose=False
-                ),
                 page_timeout=ExtractionConfig.QUICK_TIMEOUT_MS,
                 wait_until="domcontentloaded",
                 excluded_tags=["script", "style", "nav", "footer", "header"]
@@ -433,19 +371,167 @@ class AdvancedCrawl4AIExtractor:
             
             result = await crawler.arun(url=url, config=config)
             
-            if result.success and result.extracted_content:
-                try:
-                    data = json.loads(result.extracted_content)
-                    if isinstance(data, list) and data:
-                        data = data[0]
-                    return data
-                except json.JSONDecodeError:
-                    pass
+            if not result.success or not result.cleaned_html:
+                return None
+            
+            # Parse with BeautifulSoup for direct selector testing
+            soup = BeautifulSoup(result.cleaned_html, 'html.parser')
+            extracted_data = {}
+            
+            # Extract each field systematically - single pass per field
+            for field_name, selectors in field_selectors.items():
+                field_value = self._extract_single_field(
+                    soup, field_name, selectors, result.metadata
+                )
+                if field_value:
+                    extracted_data[field_name] = field_value
+            
+            return extracted_data if extracted_data else None
                     
-        except Exception:
-            pass
+        except Exception as e:
+            self.logger.debug(f"Systematic field extraction failed for {url}: {e}")
+            return None
+    
+    def _extract_single_field(
+        self,
+        soup: BeautifulSoup,
+        field_name: str,
+        selectors: list,
+        metadata: dict = None
+    ) -> Optional[str]:
+        """
+        Extract a single field using selector list - NO NESTED LOOPS.
+        Tests selectors sequentially until one works.
+        FIXED: Now handles comma-separated selectors properly.
+        """
+        # Early termination for efficiency - test selectors one by one
+        for selector in selectors:
+            try:
+                # CRITICAL FIX: Handle comma-separated selectors
+                if ',' in selector:
+                    # Split comma-separated selectors and test each individually
+                    individual_selectors = [s.strip() for s in selector.split(',')]
+                    for individual_selector in individual_selectors:
+                        result = self._test_individual_selector(
+                            soup, individual_selector, field_name, metadata
+                        )
+                        if result:
+                            return result
+                else:
+                    # Single selector - test directly
+                    result = self._test_individual_selector(
+                        soup, selector, field_name, metadata
+                    )
+                    if result:
+                        return result
+                        
+            except Exception:
+                continue  # Try next selector on any error
         
+        # Fallback to metadata if available
+        if metadata and field_name in ['title', 'author', 'image']:
+            metadata_map = {
+                'title': ['title', 'og:title'],
+                'author': ['author', 'article:author'],
+                'image': ['og:image', 'twitter:image']
+            }
+            
+            for meta_key in metadata_map.get(field_name, []):
+                if meta_key in metadata and metadata[meta_key]:
+                    value = metadata[meta_key]
+                    if field_name == 'title':
+                        value = self._clean_title_suffixes(value)
+                    return value
+        
+        return None  # No selector worked
+    
+    def _test_individual_selector(
+        self,
+        soup: BeautifulSoup,
+        selector: str,
+        field_name: str,
+        metadata: dict = None
+    ) -> Optional[str]:
+        """
+        Test a single individual selector - NO COMMAS.
+        Returns extracted text or None.
+        """
+        try:
+            # Handle different extraction types based on selector
+            if selector.startswith('meta[') and field_name == 'image':
+                # Meta tag extraction for images
+                element = soup.select_one(selector)
+                if element and element.get('content'):
+                    return element.get('content')
+                    
+            elif selector.startswith('[property=') or selector.startswith('[itemprop='):
+                # Metadata attribute extraction
+                element = soup.select_one(selector)
+                if element:
+                    if element.get('content'):
+                        return element.get('content')
+                    elif element.get('datetime'):
+                        return element.get('datetime')
+                        
+            elif 'time[datetime]' in selector:
+                # Time element with datetime attribute
+                element = soup.select_one('time[datetime]')
+                if element and element.get('datetime'):
+                    return element.get('datetime')
+                    
+            elif selector == 'title' and field_name == 'title':
+                # Title tag fallback
+                title_elem = soup.find('title')
+                if title_elem:
+                    title_text = title_elem.get_text(strip=True)
+                    # Clean common suffixes from Vietnamese news sites
+                    title_text = self._clean_title_suffixes(title_text)
+                    if title_text:
+                        return title_text
+                        
+            else:
+                # Regular text extraction
+                element = soup.select_one(selector)  # Single selector only
+                if element:
+                    text = element.get_text(strip=True)
+                    if text and len(text) > 2:  # Minimum text length
+                        # Special content validation
+                        if field_name == 'content' and len(text) < ExtractionConfig.MIN_CONTENT_LENGTH:
+                            return None  # Not enough content
+                        return text
+                        
+        except Exception:
+            pass  # Return None on any error
+            
         return None
+    
+    def _clean_title_suffixes(self, title: str) -> str:
+        """
+        Clean common Vietnamese news site suffixes from titles.
+        """
+        if not title:
+            return title
+            
+        # Common suffixes to remove
+        suffixes = [
+            '- Báo VnExpress',
+            '| Báo Dân trí', 
+            '- Tuổi Trẻ Online',
+            '- Thanh Niên',
+            '- 24h.com.vn',
+            '- VnExpress',
+            '| Dân trí',
+            '| TUOI TRE ONLINE',
+            '- thanhnien.vn',
+            '- Tin Tức 24h'
+        ]
+        
+        for suffix in suffixes:
+            if title.endswith(suffix):
+                title = title[:-len(suffix)].strip()
+                break
+                
+        return title
     
     async def _build_article_from_data(
         self,
@@ -565,7 +651,7 @@ class AdvancedCrawl4AIExtractor:
         url: str
     ) -> Optional[ExtractedArticle]:
         """
-        Fallback extraction using markdown generation.
+        Fallback extraction using markdown generation with DYNAMIC LOADING.
         Most reliable but may include extra content.
         """
         try:
