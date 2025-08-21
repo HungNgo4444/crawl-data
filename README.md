@@ -1,348 +1,254 @@
-# 🚀 Enhanced Web Crawler v2
+# 🚀 AI-Powered Vietnamese News Crawler System
 
-**Multi-Stage Hybrid Crawler với Tiered Storage Architecture**
+> **Complete containerized system for Stories 1.1-1.3: Database Foundation, GWEN-3 Model Deployment, and Domain Analysis Worker**
 
-Hệ thống crawl tin tức Việt Nam hiệu suất cao, được thiết kế để thu thập và xử lý dữ liệu từ các trang tin tức với tốc độ nhanh và độ tin cậy cao.
+[![Container Status](https://img.shields.io/badge/containers-ready-green.svg)](http://localhost:8082/health)
+[![GWEN-3 Model](https://img.shields.io/badge/gwen--3-qwen2.5:3b-blue.svg)](http://localhost:11434/api/tags)
+[![Stories Complete](https://img.shields.io/badge/stories-1.1--1.3-success.svg)](#development-status)
 
-## ⚡ **Performance Targets**
+## 🎯 **Quick Start - Complete System**
 
-| Metric | Target | Cải thiện so với v1 |
-|--------|--------|-------------------|
-| **Crawl Speed** | 50-100 articles/phút | 5-10x nhanh hơn |
-| **Link Discovery** | 1000+ links/30 giây | Mới |
-| **Cache Hit Rate** | >80% | 5x nhanh hơn queries |
-| **Success Rate** | >95% | +15% |
-| **Memory Usage** | <2GB/1000 articles | 5x hiệu quả |
+### Windows:
+```bash
+# Start complete AI crawler system (Stories 1.1-1.3)
+./dev-commands.bat dev-start
 
-## 🏗️ **Architecture Overview**
+# Check system health
+./dev-commands.bat health
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                 ENHANCED CRAWLER v2                         │
-├─────────────────────────────────────────────────────────────┤
-│  STAGE 1: LINK DISCOVERY (Ultra Fast)                      │
-│  ┌─────────────────┐    ┌─────────────────┐               │
-│  │ RSS Crawler     │───▶│ Link Processor  │               │
-│  │ • VnExpress     │    │ • Filter & Sort │               │
-│  │ • CafeF         │    │ • Deduplicate   │               │
-│  │ • DanTri        │    │ • Priority Score│               │
-│  └─────────────────┘    └─────────────────┘               │
-│           │                       │                        │
-│           ▼                       ▼                        │
-│  STAGE 2: SMART CONTENT EXTRACTION                         │
-│  ┌─────────────────┐    ┌─────────────────┐               │
-│  │ Strategy Router │───▶│ Multi Engine    │               │
-│  │ • Auto Detect   │    │ • Scrapy (Fast) │               │
-│  │ • Site Profiles │    │ • Playwright    │               │
-│  │ • Load Balance  │    │ • Hybrid Mode   │               │
-│  └─────────────────┘    └─────────────────┘               │
-│           │                       │                        │
-│           ▼                       ▼                        │
-│  TIERED STORAGE (Smart Caching)                           │
-│  ┌─────────────────┐    ┌─────────────────┐               │
-│  │ Redis Cache     │    │ PostgreSQL      │               │
-│  │ • Hot Data      │───▶│ • Partitioned   │               │
-│  │ • Query Cache   │    │ • Indexed       │               │
-│  └─────────────────┘    └─────────────────┘               │
-│                                   │                        │
-│                                   ▼                        │
-│                          ┌─────────────────┐               │
-│                          │ MinIO Storage   │               │
-│                          │ • Full Content  │               │
-│                          │ • 70% Compress  │               │
-│                          └─────────────────┘               │
-└─────────────────────────────────────────────────────────────┘
+# Setup database với Vietnamese domains
+./dev-commands.bat setup-db
+
+# Run tests
+./dev-commands.bat test
+
+# Stop system
+./dev-commands.bat dev-stop
 ```
 
-## 📁 **Project Structure**
+### Unix/Linux:
+```bash
+# Start complete system
+docker-compose up -d
 
-```
-├── crawler_layer/                 # 🕷️ Crawler Logic
-│   ├── link_discovery/           # Stage 1: Link Discovery
-│   │   ├── rss_crawler.py        # RSS feed crawler (1000+ links/30s)
-│   │   ├── link_processor.py     # Smart filtering & prioritization
-│   │   └── link_queue.py         # Priority queue management
-│   ├── content_extraction/       # Stage 2: Content Extraction
-│   │   ├── strategy_router.py    # Intelligent routing
-│   │   ├── scrapy_engine.py      # Fast static content (50-100/min)
-│   │   └── content_processor.py  # Content cleaning & analysis
-│   └── main.py                   # Application entry point
-│
-├── storage_layer/                # 💾 Storage Management
-│   ├── database/                 # PostgreSQL with partitioning
-│   │   ├── models_v2.py          # Optimized models
-│   │   └── partitions.sql        # Monthly partitioning
-│   ├── cache/                    # Redis caching
-│   │   └── redis_manager.py      # High-performance caching
-│   ├── object_storage/           # MinIO integration
-│   │   ├── minio_manager.py      # Object storage
-│   │   └── compression_utils.py  # 70% compression
-│   └── data_access/              # Data access layer
-│       └── article_repository.py # Smart data access
-│
-├── config/                       # ⚙️ Configuration
-│   ├── crawler_profiles/         # Site-specific configs
-│   │   ├── vnexpress.yaml        # VnExpress profile
-│   │   ├── cafef.yaml           # CafeF profile
-│   │   └── dantri.yaml          # DanTri profile
-│   └── news_sources_v2.yaml     # Global sources config
-│
-├── docker-compose.v2.yml         # 🐳 Docker Compose v2
-├── Dockerfile.v2                 # 🐳 Multi-stage Dockerfile
-└── requirements.txt              # 📦 Dependencies
+# Check health
+docker-compose ps
+
+# View logs
+docker-compose logs -f
 ```
 
-## 🚀 **Quick Start**
+## 🏗️ **Complete Container Architecture (Stories 1.1-1.3)**
 
-### 1. **Với Docker (Recommended)**
+### ✅ **Story 1.1: Database Schema Foundation**
+- **PostgreSQL** (`crawler_postgres`): Port 5432
+- **pgAdmin** (optional): Port 8080 - Database management interface
+
+### ✅ **Story 1.2: GWEN-3 Model Deployment**  
+- **Ollama** (`crawler_ollama`): Port 11434 - Vietnamese AI analysis model
+- **GPU Support**: GTX 1650 4GB optimized
+
+### ✅ **Story 1.3: Domain Analysis Worker**
+- **Analysis Worker** (`crawler_analysis_worker`): Port 8082 - Main analysis service
+- **Redis** (`crawler_redis`): Port 6379 - Queue management
+
+### 🛠️ **Development Tools**
+- **Redis Commander**: Port 8081 (`--profile dev`)
+- **Prometheus**: Port 9090 (`--profile monitoring`)
+- **Grafana**: Port 3000 (`--profile monitoring`)
+
+## 📊 **Service URLs**
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| Analysis Worker API | http://localhost:8082/health | Health check & API |
+| GWEN-3 Ollama | http://localhost:11434/api/version | AI model API |
+| pgAdmin | http://localhost:8080 | Database management |
+| Redis Commander | http://localhost:8081 | Queue management |
+| Prometheus | http://localhost:9090 | Metrics collection |
+| Grafana | http://localhost:3000 | Visualization |
+
+**Login Credentials:**
+- pgAdmin: `admin@crawler.dev` / `admin123`
+- Grafana: `admin` / `admin`
+
+## 📁 **Project Structure (Organized)**
+
+```
+📦 AI-Powered Multi-Domain News Crawler
+├── 🐳 docker-compose.yml          # Complete system container orchestration
+├── ⚡ dev-commands.bat           # Windows development commands
+├── ⚡ Makefile                  # Unix/Linux development commands  
+├── 📖 README.md                 # This file
+├── 
+├── 🚀 apps/
+│   ├── analysis_worker/         ✅ Story 1.3 - Analysis Worker
+│   │   ├── Dockerfile
+│   │   ├── docker-compose.yml   # Individual service compose (legacy)
+│   │   ├── src/                 # Analysis worker source code
+│   │   └── tests/               # Comprehensive test suite
+│   └── _future/                 📋 Future stories (1.4-1.8)
+│       ├── domain_api/          📝 Story 1.5 (Domain Management API)
+│       └── enhanced_crawler/    📝 Story 1.4 (Enhanced Crawler)
+├── 
+├── 🗄️ deployment/               ✅ Story 1.1 - Database deployment
+│   ├── docker-compose.yml       # Legacy database compose
+│   ├── migrations/              # Database schema migrations
+│   └── init/                    # Database initialization
+├── 
+├── 📚 docs/                     📖 Complete system documentation
+│   ├── stories/                 # Story specifications (1.1-1.3 ✅)
+│   ├── architecture/            # System architecture docs
+│   └── deployment/              # Deployment guides
+├── 
+├── ⚙️ config/                   🛠️ Configuration files
+│   ├── database/                # Database configs
+│   └── gwen3/                   # GWEN-3 model configs
+├── 
+└── 🗂️ archived/                📦 Cleaned up files (Phase 1)
+    ├── moved-20250812/          # Duplicate files removed
+    └── unused-gwen3_client/     # Old client implementation
+```
+
+## 🚧 **Development Status - Stories 1.1-1.3**
+
+| Story | Title | Status | Container | Port | Notes |
+|-------|-------|--------|-----------|------|-------|
+| **1.1** | Database Schema Foundation | ✅ **COMPLETE** | crawler_postgres | 5432 | PostgreSQL với Vietnamese domains |
+| **1.2** | GWEN-3 Model Deployment | ✅ **COMPLETE** | crawler_ollama | 11434 | Ollama với qwen2.5:3b |
+| **1.3** | Domain Analysis Worker | ✅ **COMPLETE** | crawler_analysis_worker | 8082 | Redis queue + Analysis API |
+| 1.4 | Enhanced Crawler | 📋 Ready for Dev | TBD | TBD | Template-based crawling |
+| 1.5 | Domain Management API | 📋 Ready for Dev | TBD | 8000 | FastAPI với WebSocket |
+| 1.6 | React Admin Interface | 📋 Ready for Dev | TBD | 3000 | TypeScript + Material-UI |
+| 1.7 | Monitoring Stack | 📋 Ready for Dev | TBD | 9090 | Prometheus/Grafana |
+| 1.8 | Integration Testing | 📋 Ready for Dev | TBD | - | E2E testing suite |
+
+## 🧪 **Testing & Validation**
 
 ```bash
-# Clone project
-git clone <repository-url>
-cd crawl-data
+# Complete system health check
+./dev-commands.bat health
 
-# Chạy full stack
-docker-compose -f docker-compose.v2.yml up -d
+# Run analysis worker tests
+./dev-commands.bat test
 
-# Kiểm tra services
-docker-compose -f docker-compose.v2.yml ps
+# Test individual components
+docker-compose exec analysis-worker pytest tests/unit/ -v
+docker-compose exec analysis-worker pytest tests/integration/ -v
+docker-compose exec analysis-worker pytest tests/performance/ -v
+
+# Database validation
+docker-compose exec postgres psql -U crawler_user -d crawler_db -c "\dt"
 ```
 
-### 2. **Access Services**
+## 🔧 **Development Commands**
 
-- **Main App**: http://localhost:8080
-- **Grafana Monitoring**: http://localhost:3000 (admin/admin123)
-- **Prometheus Metrics**: http://localhost:9090
-- **MinIO Console**: http://localhost:9001 (minioadmin/minioadmin123)
-- **PostgreSQL**: localhost:5432 (crawler_user/crawler_pass)
-- **Redis**: localhost:6379
+### Windows (dev-commands.bat):
+| Command | Purpose |
+|---------|---------|
+| `./dev-commands.bat help` | Show all available commands |
+| `./dev-commands.bat dev-start` | Start complete system (Stories 1.1-1.3) |
+| `./dev-commands.bat health` | Health check all services |
+| `./dev-commands.bat setup-db` | Setup Vietnamese domains database |
+| `./dev-commands.bat logs` | View system logs |
+| `./dev-commands.bat dev-stop` | Stop all containers |
+| `./dev-commands.bat clean` | Clean containers và volumes |
 
-### 3. **Local Development**
-
+### Unix/Linux (docker-compose):
 ```bash
-# Setup virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+# Basic operations
+docker-compose up -d                    # Start all services
+docker-compose down                     # Stop all services  
+docker-compose ps                       # Show service status
+docker-compose logs -f [service]        # View logs
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Setup environment
-cp env.example .env
-
-# Initialize database
-python -c "from storage_layer.database.models_v2 import init_database_v2; init_database_v2(engine)"
-
-# Run crawler
-python -m crawler_layer.main
+# With profiles
+docker-compose --profile dev up -d      # Include Redis Commander
+docker-compose --profile monitoring up # Include Prometheus/Grafana
+docker-compose --profile admin up      # Include pgAdmin
 ```
 
-## 🎯 **Key Features**
+## 🗄️ **Database Management**
 
-### **🔥 Stage 1: Ultra-Fast Link Discovery**
-- **RSS Crawler**: Thu thập 1000+ links trong 30 giây
-- **Smart Filtering**: Loại bỏ duplicate, spam, irrelevant content
-- **Priority Scoring**: Ưu tiên financial/business news
-- **Multi-source**: VnExpress, CafeF, DanTri, VietnamNet, etc.
-
-### **⚡ Stage 2: Intelligent Content Extraction**
-- **Strategy Router**: Tự động chọn scrapy/playwright dựa vào site profile
-- **Scrapy Engine**: 50-100 articles/phút cho static content
-- **Content Processor**: AI-powered cleaning và quality scoring
-- **Batch Processing**: Xử lý concurrent với rate limiting
-
-### **💾 Tiered Storage Architecture**
-- **Redis Cache**: <10ms response time, >80% hit rate
-- **PostgreSQL**: Monthly partitioning, optimized indexes
-- **MinIO Storage**: 70% compression ratio, scalable object storage
-- **Smart Caching**: Auto-cache frequent queries và recent articles
-
-## 📊 **Monitoring & Metrics**
-
-### **Performance Dashboards**
 ```bash
-# Grafana dashboards
-open http://localhost:3000
+# Setup Vietnamese news domains
+./dev-commands.bat setup-db
 
-# Key metrics:
-- Crawl speed (articles/minute)
-- Cache hit rate (%)
-- Database query time (ms)
-- Storage utilization (GB)
-- Error rates by source
+# Connect to database
+docker-compose exec postgres psql -U crawler_user -d crawler_db
+
+# Run specific migration
+docker-compose exec postgres psql -U crawler_user -d crawler_db -f /docker-entrypoint-initdb.d/01-init.sql
+
+# Check tables
+docker-compose exec postgres psql -U crawler_user -d crawler_db -c "\dt"
 ```
 
-### **Health Checks**
-```bash
-# Container health
-docker-compose -f docker-compose.v2.yml ps
+## 📊 **System Monitoring**
 
-# Application health
-curl http://localhost:8080/health
+### Health Checks:
+- **System**: `./dev-commands.bat health`
+- **Analysis Worker**: http://localhost:8082/health
+- **Database**: `docker-compose exec postgres pg_isready -U crawler_user`
+- **GWEN-3 Model**: http://localhost:11434/api/version
+- **Redis Queue**: `docker-compose exec redis redis-cli ping`
+
+### Logs:
+```bash
+# All services
+./dev-commands.bat logs
 
 # Individual services
-curl http://localhost:8080/health/database
-curl http://localhost:8080/health/redis  
-curl http://localhost:8080/health/minio
+docker-compose logs postgres
+docker-compose logs ollama  
+docker-compose logs analysis-worker
+docker-compose logs redis
 ```
 
-## ⚙️ **Configuration**
+## 🎯 **Key Features Implemented**
 
-### **News Sources** (`config/news_sources_v2.yaml`)
-```yaml
-sources:
-  vnexpress:
-    priority: 10
-    strategy: "scrapy"  # Fast static content
-    rss_feeds: ["https://vnexpress.net/rss/kinh-doanh.rss"]
-    
-  cafef:
-    priority: 9
-    strategy: "scrapy"
-    crawl_delay: 2.0
-```
+### ✅ **Story 1.1 Features:**
+- PostgreSQL 15+ với JSONB support
+- Domain management schema (domain_configurations, domain_parsing_templates, domain_analysis_queue)
+- Connection pooling optimized for 16GB RAM constraint
+- Migration framework với rollback support
+- Vietnamese news domain seed data (8 major sites)
 
-### **Site Profiles** (`config/crawler_profiles/`)
-- Tối ưu cho từng trang tin cụ thể
-- CSS selectors cho content extraction
-- Rate limiting và anti-detection
-- Quality control rules
+### ✅ **Story 1.2 Features:**  
+- Ollama container với GWEN-3 8B model (qwen2.5:3b)
+- GPU support for GTX 1650 4GB
+- Memory optimization (8GB constraint)
+- Health checking và auto-restart
+- Vietnamese content analysis capabilities
 
-### **Environment Variables**
-```bash
-# Database
-DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/db
+### ✅ **Story 1.3 Features:**
+- Redis-based queue management
+- Async analysis worker với FastAPI integration  
+- GWEN-3 model integration
+- Comprehensive error handling và retry logic
+- Health check API endpoints
+- Development hot reload support
 
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
+## 🎉 **Containerization Complete**
 
-# MinIO
-MINIO_ENDPOINT=localhost:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin123
+**Stories 1.1-1.3 are fully containerized và functional!**
 
-# Performance
-MAX_CONCURRENT_CRAWLS=20
-BULK_INSERT_BATCH_SIZE=100
-CACHE_TTL=3600
-```
+✅ **Database Schema Foundation** - PostgreSQL với Vietnamese domains  
+✅ **GWEN-3 Model Deployment** - Ollama với AI analysis  
+✅ **Domain Analysis Worker** - Redis queue + Analysis API  
 
-## 🔧 **Development**
+**Next Phase:** Stories 1.4-1.8 containerization
 
-### **Adding New News Source**
-```bash
-# 1. Tạo site profile
-cp config/crawler_profiles/generic.yaml config/crawler_profiles/newssite.yaml
+## 🤝 **Contributing**
 
-# 2. Edit selectors và settings
-vim config/crawler_profiles/newssite.yaml
-
-# 3. Add to sources config
-vim config/news_sources_v2.yaml
-
-# 4. Test
-python -m crawler_layer.main --test-source newssite
-```
-
-### **Database Operations**
-```bash
-# Create new partition
-python -c "from storage_layer.database.models_v2 import create_monthly_partitions; create_monthly_partitions(engine, 2024, 12)"
-
-# Bulk insert test
-python -c "from storage_layer.data_access.article_repository import ArticleRepository; repo.bulk_insert_articles(test_data)"
-
-# Check performance
-python -c "print(repo.get_repository_stats())"
-```
-
-## 📈 **Performance Optimization**
-
-### **Database Tuning**
-- Monthly partitioning cho better query performance
-- Composite indexes cho common query patterns  
-- Bulk insert với UPSERT operations
-- Connection pooling with async SQLAlchemy
-
-### **Cache Strategy**
-- **L1 Cache**: Redis cho recent articles (1-2 hours TTL)
-- **L2 Cache**: Query result caching (10 minutes TTL)  
-- **L3 Storage**: MinIO cho full content với compression
-
-### **Crawler Optimization**
-- **Concurrent Processing**: 20+ simultaneous requests
-- **Smart Rate Limiting**: Respect robots.txt và server limits
-- **Connection Pooling**: Reuse HTTP connections
-- **Content Streaming**: Process data on-the-fly
-
-## 🛠️ **Troubleshooting**
-
-### **Common Issues**
-
-**Low crawl speed:**
-```bash
-# Check concurrent settings
-echo $MAX_CONCURRENT_CRAWLS
-
-# Monitor resource usage  
-docker stats
-
-# Check network latency
-ping vnexpress.net
-```
-
-**Cache misses:**
-```bash
-# Redis status
-redis-cli info memory
-
-# Cache hit rate
-curl http://localhost:8080/metrics | grep cache_hit_rate
-```
-
-**Database performance:**
-```bash
-# Check partition usage
-docker exec -it crawler_postgres_v2 psql -d crawler_db -c "SELECT * FROM monitoring.partition_info"
-
-# Query analysis
-EXPLAIN ANALYZE SELECT * FROM articles WHERE source = 'vnexpress';
-```
-
-## 🚀 **Deployment**
-
-### **Production Setup**
-```bash
-# Use production compose
-docker-compose -f docker-compose.v2.yml up -d
-
-# Scale content extractors
-docker-compose -f docker-compose.v2.yml up -d --scale content_extractor=4
-
-# Setup reverse proxy
-# Configure nginx.conf cho load balancing
-```
-
-### **Scaling Strategy**
-- **Horizontal**: Multiple crawler instances
-- **Vertical**: More CPU/memory per container  
-- **Database**: Read replicas cho query load
-- **Storage**: Distributed MinIO setup
+1. **Start system**: `./dev-commands.bat dev-start`
+2. **Check health**: `./dev-commands.bat health`  
+3. **Make changes** in respective `apps/` folders
+4. **Test changes**: `./dev-commands.bat test`
+5. **View logs**: `./dev-commands.bat logs`
 
 ---
 
-## 📚 **Layer Documentation**
-
-- 📖 **[Crawler Layer](crawler_layer/README.md)** - Link discovery và content extraction
-- 📖 **[Storage Layer](storage_layer/README.md)** - Database, cache và object storage  
-- 📖 **[Config Layer](config/README.md)** - Configuration management
-
-## 📞 **Support**
-
-- **Documentation**: Xem README trong từng layer
-- **Issues**: Report bugs via GitHub issues
-- **Monitoring**: Sử dụng Grafana dashboards
-- **Logs**: Structured logging trong `logs/` folder
-
-**🎯 Với Enhanced Crawler v2, bạn có thể crawl tin tức Việt Nam với tốc độ 5-10x nhanh hơn và độ tin cậy cao!**
+**📧 Author:** James (Full Stack Developer) - Container System Architect  
+**📅 Date:** 2025-08-12  
+**🔗 Stories:** 1.1-1.3 Complete Container Implementation

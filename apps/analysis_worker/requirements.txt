@@ -1,0 +1,44 @@
+# Analysis Worker Dependencies
+# Core async and web framework
+asyncio-mqtt==0.13.0
+aiohttp==3.9.1
+aiofiles==23.2.1
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Database
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+
+# Redis
+redis==5.0.1
+
+# HTML parsing and content processing
+beautifulsoup4==4.12.2
+lxml==4.9.4
+
+# URL and domain validation
+validators==0.22.0
+dnspython==2.4.2
+
+# Vietnamese text processing
+unicodedata2==15.1.0
+
+# Monitoring and metrics
+prometheus-client==0.19.0
+psutil==5.9.6
+
+# Data structures and utilities
+pydantic==2.5.0
+dataclasses-json==0.6.3
+
+# Testing (for development)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Development tools
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1

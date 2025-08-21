@@ -1,0 +1,156 @@
+# Production Environment Override  
+# Use: docker-compose -f docker-compose.yml -f environments/production.yml up -d
+
+services:
+  # Production database với security hardening
+  postgres:
+    restart: always
+    environment:
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --locale=en_US.UTF-8 --auth-local=md5 --auth-host=md5
+    command: >
+      postgres
+      -c max_connections=100
+      -c shared_buffers=256MB  
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # Production Ollama với full GPU utilization
+  ollama:
+    restart: always
+    environment:
+      - OLLAMA_DEBUG=0
+      - OLLAMA_KEEP_ALIVE=600s
+      - OLLAMA_NUM_PARALLEL=2
+      - OLLAMA_MAX_LOADED_MODELS=1
+    deploy:
+      resources:
+        limits:
+          memory: 6G  # Full GTX 1650 capacity
+          cpus: '4.0'
+        reservations:
+          memory: 4G
+          cpus: '2.0'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  # Production Analysis Worker với optimized settings
+  analysis-worker:
+    restart: always
+    environment:
+      - LOG_LEVEL=INFO
+      - METRICS_ENABLED=true
+      - MAX_CONCURRENT_ANALYSES=5  # Increased for production
+      - ANALYSIS_TIMEOUT=600
+      - DEVELOPMENT_MODE=false
+      - HOT_RELOAD=false
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+    volumes:
+      # Production: no source code mounting
+      - ../apps/analysis_worker/logs:/app/logs
+    logging:
+      driver: "json-file"  
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # Production Redis với persistence optimized
+  redis:
+    restart: always
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --save 900 1
+      --save 300 10  
+      --save 60 10000
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --loglevel notice
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # Production pgAdmin (optional)
+  pgadmin:
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@crawler.prod}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-}
+      - PGADMIN_CONFIG_SERVER_MODE=True
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=True
+    profiles:
+      - admin  # Require explicit profile for production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m" 
+        max-file: "2"
+
+# Production-specific configurations
+networks:
+  crawler-system:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Production volumes với backup labels
+volumes:
+  postgres_data:
+    driver: local
+    labels:
+      backup.enable: "true"
+      backup.schedule: "daily"
+  
+  ollama_models:
+    driver: local
+    labels:
+      backup.enable: "true"
+      backup.schedule: "weekly"
+      
+  redis_data:
+    driver: local
+    labels:
+      backup.enable: "true"
+      backup.schedule: "daily"

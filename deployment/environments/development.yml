@@ -1,0 +1,59 @@
+# Development Environment Override
+# Use: docker-compose -f docker-compose.yml -f environments/development.yml up -d
+
+services:
+  # Development database với verbose logging
+  postgres:
+    environment:
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --locale=en_US.UTF-8 --auth-local=trust --auth-host=md5
+    command: >
+      postgres 
+      -c log_statement=all 
+      -c log_destination=stderr 
+      -c logging_collector=on
+      -c log_min_duration_statement=0
+    volumes:
+      - ../config/database/migrations:/docker-entrypoint-initdb.d/migrations:ro
+
+  # Development Ollama với debug mode  
+  ollama:
+    environment:
+      - OLLAMA_DEBUG=1
+      - OLLAMA_VERBOSE=1
+      - OLLAMA_KEEP_ALIVE=300s  # Shorter for dev
+    deploy:
+      resources:
+        limits:
+          memory: 4G  # Reduced for development
+          cpus: '2.0'
+
+  # Development Analysis Worker với hot reload
+  analysis-worker:
+    environment:
+      - LOG_LEVEL=DEBUG
+      - METRICS_ENABLED=true
+      - DEVELOPMENT_MODE=true
+      - HOT_RELOAD=true
+    volumes:
+      - ../apps/analysis_worker/src:/app/src:ro  # Read-only source mounting
+      - ../apps/analysis_worker/tests:/app/tests:ro
+      - ../apps/analysis_worker/logs:/app/logs
+    ports:
+      - "8083:8080"  # Alternative port for dev
+
+  # Development Redis với debug
+  redis:
+    command: >
+      redis-server 
+      --appendonly yes 
+      --loglevel debug
+      --save 60 1
+
+  # Always include development tools
+  redis-commander:
+    profiles: []  # Remove profile restriction
+
+# Development-specific volumes
+volumes:
+  postgres_dev_data:
+    driver: local

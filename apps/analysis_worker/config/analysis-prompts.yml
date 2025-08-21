@@ -1,0 +1,257 @@
+# GWEN-3 Analysis Prompts for Vietnamese Content
+# Optimized prompts for domain structure analysis
+
+domain_analysis_prompt: |
+  Bạn là chuyên gia phân tích cấu trúc trang web tin tức tiếng Việt. Hãy phân tích trang web sau và tạo template parsing JSON chi tiết.
+
+  Domain: {domain_name}
+  {urls_context}
+
+  HTML Content:
+  {content}
+
+  Yêu cầu phân tích:
+  1. Xác định các selector CSS cho tiêu đề bài viết
+  2. Tìm selector cho nội dung chính 
+  3. Xác định metadata (tác giả, ngày đăng, chuyên mục)
+  4. Phân tích cấu trúc navigation và menu
+  5. Đánh giá độ tin cậy của template
+
+  Trả về kết quả JSON theo format sau:
+  {{
+    "confidence_score": 0.85,
+    "language_detected": "vietnamese",
+    "parsing_template": {{
+      "headline": {{
+        "selectors": ["h1.title", ".article-title"],
+        "priority": 1,
+        "confidence": 0.9
+      }},
+      "content": {{
+        "selectors": [".article-content", ".content-body"],
+        "priority": 1,
+        "confidence": 0.8
+      }},
+      "metadata": {{
+        "author": ".author-name, .byline",
+        "publish_date": ".publish-date, time",
+        "category": ".category, .section"
+      }}
+    }},
+    "structure_analysis": {{
+      "layout_type": "standard_news",
+      "complexity_score": 3,
+      "vietnamese_content_ratio": 0.95
+    }},
+    "recommendations": [
+      "Selector .article-title có độ tin cậy cao cho tiêu đề",
+      "Cần kiểm tra thêm selector backup cho nội dung"
+    ]
+  }}
+
+  Chỉ trả về JSON, không giải thích thêm.
+
+content_structure_prompt: |
+  Phân tích cấu trúc nội dung của trang web tin tức Việt Nam:
+
+  Domain: {domain_name}
+  Content: {content_sample}
+
+  Hãy xác định:
+  1. Loại layout chính (standard_news, magazine, blog, portal)
+  2. Cấu trúc điều hướng
+  3. Các phần tử chính của trang
+  4. Độ phức tạp của template
+
+  Trả về JSON:
+  {{
+    "layout_type": "standard_news",
+    "navigation_structure": {{
+      "main_menu": "selector",
+      "breadcrumb": "selector",
+      "category_menu": "selector"
+    }},
+    "content_sections": {{
+      "header": "selector",
+      "main_content": "selector", 
+      "sidebar": "selector",
+      "footer": "selector"
+    }},
+    "complexity_assessment": {{
+      "score": 3,
+      "factors": ["responsive_design", "dynamic_content", "multiple_layouts"]
+    }}
+  }}
+
+vietnamese_language_check_prompt: |
+  Kiểm tra và đánh giá nội dung tiếng Việt:
+
+  Content: {content}
+
+  Phân tích:
+  1. Tỷ lệ nội dung tiếng Việt
+  2. Chất lượng ngôn ngữ
+  3. Loại nội dung (tin tức, blog, thương mại)
+  4. Độ tin cậy
+
+  JSON response:
+  {{
+    "is_vietnamese": true,
+    "confidence": 0.95,
+    "language_quality": "high",
+    "content_type": "news",
+    "indicators": {{
+      "vietnamese_keywords": 15,
+      "diacritics_ratio": 0.12,
+      "news_vocabulary": 8
+    }}
+  }}
+
+url_discovery_prompt: |
+  Phân tích và tìm kiếm các URL patterns cho tin tức Việt:
+
+  Domain: {domain_name}
+  Homepage Content: {homepage_content}
+
+  Tìm:
+  1. RSS feeds
+  2. Sitemap URLs
+  3. Category/section URLs
+  4. Article URL patterns
+  5. Navigation patterns
+
+  JSON format:
+  {{
+    "discovery_results": {{
+      "rss_feeds": ["url1", "url2"],
+      "sitemaps": ["sitemap1", "sitemap2"],
+      "categories": ["category1", "category2"],
+      "article_patterns": ["pattern1", "pattern2"]
+    }},
+    "url_analysis": {{
+      "total_links": 150,
+      "internal_links": 120,
+      "article_links": 45,
+      "category_links": 8
+    }},
+    "navigation_structure": {{
+      "main_navigation": "selector",
+      "category_navigation": "selector",
+      "pagination": "selector"
+    }}
+  }}
+
+template_validation_prompt: |
+  Xác thực template đã được tạo cho domain Việt Nam:
+
+  Domain: {domain_name}
+  Generated Template: {template_json}
+  Sample Content: {validation_content}
+
+  Kiểm tra:
+  1. Độ chính xác của selectors
+  2. Khả năng trích xuất nội dung
+  3. Xử lý edge cases
+  4. Khuyến nghị cải thiện
+
+  Response:
+  {{
+    "validation_result": {{
+      "is_valid": true,
+      "accuracy_score": 0.92,
+      "issues_found": [],
+      "recommendations": []
+    }},
+    "selector_analysis": {{
+      "headline_accuracy": 0.95,
+      "content_accuracy": 0.89,
+      "metadata_accuracy": 0.87
+    }},
+    "improvements": [
+      "Thêm fallback selector cho headline",
+      "Cải thiện metadata extraction"
+    ]
+  }}
+
+error_analysis_prompt: |
+  Phân tích lỗi trong quá trình crawling/analysis:
+
+  Domain: {domain_name}
+  Error Type: {error_type}
+  Error Message: {error_message}
+  Context: {error_context}
+
+  Đưa ra:
+  1. Nguyên nhân có thể
+  2. Giải pháp khắc phục
+  3. Cách ngăn ngừa
+  4. Độ ưu tiên xử lý
+
+  Response:
+  {{
+    "error_analysis": {{
+      "root_cause": "description",
+      "severity": "high|medium|low",
+      "category": "network|parsing|configuration|model"
+    }},
+    "solutions": [
+      "solution1",
+      "solution2"
+    ],
+    "prevention": [
+      "prevention1",
+      "prevention2"
+    ],
+    "retry_recommended": true
+  }}
+
+performance_optimization_prompt: |
+  Đánh giá và tối ưu hiệu suất cho domain:
+
+  Domain: {domain_name}
+  Current Performance: {performance_metrics}
+  Template Data: {template_info}
+
+  Phân tích:
+  1. Bottlenecks hiện tại
+  2. Khuyến nghị tối ưu
+  3. Trade-offs
+  4. Expected improvements
+
+  Response:
+  {{
+    "performance_analysis": {{
+      "bottlenecks": ["selector_complexity", "large_content"],
+      "optimization_opportunities": [
+        "Simplify selectors",
+        "Reduce content sampling"
+      ]
+    }},
+    "recommendations": {{
+      "high_priority": ["action1"],
+      "medium_priority": ["action2"],
+      "low_priority": ["action3"]
+    }},
+    "expected_improvements": {{
+      "speed_increase": "25%",
+      "accuracy_maintained": true,
+      "resource_usage": "reduced"
+    }}
+  }}
+
+# Prompt configuration
+prompt_config:
+  max_tokens: 2048
+  temperature: 0.1
+  top_p: 0.9
+  stop_sequences: ["Human:", "User:", "Assistant:"]
+  
+  # Retry configuration for prompts
+  retry_on_failure: true
+  max_retries: 3
+  retry_delay: 2.0
+  
+  # Validation
+  validate_json_response: true
+  require_confidence_score: true
+  min_confidence_threshold: 0.5

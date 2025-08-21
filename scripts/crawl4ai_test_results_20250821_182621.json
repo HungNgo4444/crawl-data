@@ -1,0 +1,271 @@
+{
+  "timestamp": "2025-08-21T18:26:21.906697",
+  "summary": {
+    "total_urls": 10,
+    "successful": 10,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "results": [
+    {
+      "url": "https://vnexpress.net/muong-thanh-se-day-nhanh-tien-do-du-an-tai-huyen-thanh-oai-cu-4929824.html",
+      "domain": "vnexpress.net",
+      "success": true,
+      "extracted_data": {
+        "url": "https://vnexpress.net/muong-thanh-se-day-nhanh-tien-do-du-an-tai-huyen-thanh-oai-cu-4929824.html",
+        "title": "Mường Thanh sẽ đẩy nhanh tiến độ dự án tại huyện Thanh Oai cũ - Báo VnExpress",
+        "content": "",
+        "author": "VnExpress",
+        "publish_date": null,
+        "category": null,
+        "image_url": "https://i2-vnexpress.vnecdn.net/2025/08/21/duong-jpg-1755766718-4906-1755766747.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=gjgoLhjwYKGuw9D14-MwDg"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": false,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 4,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://vnexpress.net/chung-khoan-hom-nay-21-8-loat-co-phieu-ngan-hang-tang-kich-tran-4929850.html",
+      "domain": "vnexpress.net",
+      "success": true,
+      "extracted_data": {
+        "url": "https://vnexpress.net/chung-khoan-hom-nay-21-8-loat-co-phieu-ngan-hang-tang-kich-tran-4929850.html",
+        "title": "Chứng khoán hôm nay 21/8: Loạt cổ phiếu ngân hàng tăng kịch trần",
+        "content": "",
+        "author": "VnExpress",
+        "publish_date": null,
+        "category": null,
+        "image_url": "https://i1-kinhdoanh.vnecdn.net/2025/08/21/img-6486-jpeg-1755765468-17557-6495-6545-1755765585.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=GAwNq4_5yy-TuCkIeylaqg"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": false,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 4,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://dantri.com.vn/xa-hoi/bao-co-the-sap-xuat-hien-tren-bien-dong-mien-bac-mua-to-20250821164432023.htm",
+      "domain": "dantri.com.vn",
+      "success": true,
+      "extracted_data": {
+        "url": "https://dantri.com.vn/xa-hoi/bao-co-the-sap-xuat-hien-tren-bien-dong-mien-bac-mua-to-20250821164432023.htm",
+        "title": "Bão có thể sắp xuất hiện trên Biển Đông, miền Bắc mưa to | Báo Dân trí",
+        "content": "",
+        "author": "Dân Trí",
+        "publish_date": null,
+        "category": null,
+        "image_url": "https://cdnphoto.dantri.com.vn/eZkx0rIKqlxhZRuTAaaJG3iChn8=/zoom/1200_630/2025/08/21/bao-cropped-1755769116146.jpg"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": false,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 4,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://dantri.com.vn/xa-hoi/mua-tu-sang-den-chieu-nhieu-duong-o-trung-tam-dong-nai-ngap-sau-20250821154222999.htm",
+      "domain": "dantri.com.vn",
+      "success": true,
+      "extracted_data": {
+        "url": "https://dantri.com.vn/xa-hoi/mua-tu-sang-den-chieu-nhieu-duong-o-trung-tam-dong-nai-ngap-sau-20250821154222999.htm",
+        "title": "Mưa từ sáng đến chiều, nhiều đường ở trung tâm Đồng Nai ngập sâu | Báo Dân trí",
+        "content": "",
+        "author": "Dân Trí",
+        "publish_date": null,
+        "category": null,
+        "image_url": "https://cdnphoto.dantri.com.vn/510Tkj__Hrm_uJEmmp8RfxvfvMs=/zoom/1200_630/2025/08/21/mua-tu-sang-den-chieu-nhieu-duong-o-trung-tam-dong-nai-ngap-sau-6-edited-cropped-1755769584696.jpg"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": false,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 4,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://tuoitre.vn/tuoi-tre-khong-tu-bo-su-menh-lam-dieu-tot-cho-xa-hoi-cho-dat-nuoc-20250821083640078.htm",
+      "domain": "tuoitre.vn",
+      "success": true,
+      "extracted_data": {
+        "url": "https://tuoitre.vn/tuoi-tre-khong-tu-bo-su-menh-lam-dieu-tot-cho-xa-hoi-cho-dat-nuoc-20250821083640078.htm",
+        "title": "Tuổi Trẻ không từ bỏ sứ mệnh làm điều tốt cho xã hội, cho đất nước - Tuổi Trẻ Online",
+        "content": "",
+        "author": "TUOI TRE ONLINE",
+        "publish_date": "2025-08-21T16:49:55+07:00",
+        "category": null,
+        "image_url": "https://cdn2.tuoitre.vn/thumb_w/1200/471584752817336320/2025/8/21/binh-gam-1755768931676311676955-8-0-311-578-crop-17557689648981757362122.jpg"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": true,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 5,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://tuoitre.vn/my-tuyen-bo-chi-dong-vai-tro-toi-thieu-trong-bao-dam-an-ninh-cho-ukraine-20250821163700501.htm",
+      "domain": "tuoitre.vn",
+      "success": true,
+      "extracted_data": {
+        "url": "https://tuoitre.vn/my-tuyen-bo-chi-dong-vai-tro-toi-thieu-trong-bao-dam-an-ninh-cho-ukraine-20250821163700501.htm",
+        "title": "Mỹ tuyên bố chỉ đóng vai trò tối thiểu trong bảo đảm an ninh cho Ukraine - Tuổi Trẻ Online",
+        "content": "",
+        "author": "TUOI TRE ONLINE",
+        "publish_date": "2025-08-21T16:45:38+07:00",
+        "category": null,
+        "image_url": "https://cdn2.tuoitre.vn/thumb_w/1200/471584752817336320/2025/8/21/screenshot-2025-08-21-163101-17557686984351952561065-45-0-374-629-crop-17557689197551486849264.png"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": true,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 5,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://thanhnien.vn/tphcm-gap-kho-trong-quan-ly-trat-tu-do-thi-xay-dung-vi-thieu-luc-luong-18525082116562009.htm",
+      "domain": "thanhnien.vn",
+      "success": true,
+      "extracted_data": {
+        "url": "https://thanhnien.vn/tphcm-gap-kho-trong-quan-ly-trat-tu-do-thi-xay-dung-vi-thieu-luc-luong-18525082116562009.htm",
+        "title": "TP.HCM gặp khó trong quản lý trật tự đô thị, xây dựng vì thiếu lực lượng",
+        "content": "",
+        "author": "thanhnien.vn",
+        "publish_date": "2025-08-21T16:58:00+07:00",
+        "category": null,
+        "image_url": "https://images2.thanhnien.vn/zoom/1200_630/528068263637045248/2025/8/21/screenshot-2025-08-21-at-44729pm-1755769664871751421341-0-3-1252-2006-crop-1755769689320786379899.png"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": true,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 5,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://thanhnien.vn/tphcm-day-nhanh-tien-do-boi-thuong-di-doi-nha-ven-kenh-doi-185250821164244366.htm",
+      "domain": "thanhnien.vn",
+      "success": true,
+      "extracted_data": {
+        "url": "https://thanhnien.vn/tphcm-day-nhanh-tien-do-boi-thuong-di-doi-nha-ven-kenh-doi-185250821164244366.htm",
+        "title": "TP.HCM đẩy nhanh tiến độ bồi thường, di dời nhà ven kênh Đôi",
+        "content": "",
+        "author": "thanhnien.vn",
+        "publish_date": "2025-08-21T16:57:00+07:00",
+        "category": null,
+        "image_url": "https://images2.thanhnien.vn/zoom/1200_630/528068263637045248/2025/8/21/nha-ven-kenh-boi-thuong-17557691284381170076583-14-0-1264-2000-crop-17557691526121575880271.jpeg"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": true,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 5,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://www.24h.com.vn/bong-da/phong-vien-brunei-tuyen-bo-bat-ngo-u22-viet-nam-ghi-12-ban-khong-bang-u22-thai-lan-c48a1104089.html",
+      "domain": "www.24h.com.vn",
+      "success": true,
+      "extracted_data": {
+        "url": "https://www.24h.com.vn/bong-da/phong-vien-brunei-tuyen-bo-bat-ngo-u22-viet-nam-ghi-12-ban-khong-bang-u22-thai-lan-c48a1104089.html",
+        "title": "Phóng viên Brunei tuyên bố bất ngờ: U22 Việt Nam ghi 12 bàn không bằng U22 Thái Lan",
+        "content": "",
+        "author": "Tin Tức 24h",
+        "publish_date": null,
+        "category": null,
+        "image_url": "https://cdn.24h.com.vn/upload/4-2019/images/2019-11-29/sadfsafsa-1575009058-915-width503height262-watermark.jpg"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": false,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 4,
+      "content_length": 0,
+      "word_count": 0
+    },
+    {
+      "url": "https://www.24h.com.vn/bong-da/video-highlight-tran-nu-viet-nam-nu-indonesia-sieu-pham-mo-man-tan-cong-lien-hoi-c48a1104165.html",
+      "domain": "www.24h.com.vn",
+      "success": true,
+      "extracted_data": {
+        "url": "https://www.24h.com.vn/bong-da/video-highlight-tran-nu-viet-nam-nu-indonesia-sieu-pham-mo-man-tan-cong-lien-hoi-c48a1104165.html",
+        "title": "Video highlight trận Nữ Việt Nam - Nữ Indonesia: Tưng bừng 6 bàn, bán kết thẳng tiến",
+        "content": "",
+        "author": "Tin Tức 24h",
+        "publish_date": null,
+        "category": null,
+        "image_url": "https://cdn.24h.com.vn/upload/4-2019/images/2019-11-29/1-1200-1575017812-871-width1200height628-watermark.jpg"
+      },
+      "field_check": {
+        "url": true,
+        "title": true,
+        "content": false,
+        "author": true,
+        "publish_date": false,
+        "category": false,
+        "image_url": true
+      },
+      "fields_present": 4,
+      "content_length": 0,
+      "word_count": 0
+    }
+  ]
+}

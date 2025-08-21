@@ -1,0 +1,167 @@
+# GWEN-3 Model Configuration
+# Vietnamese content analysis optimization parameters
+# Author: James (Dev Agent)
+# Date: 2025-08-11
+
+# Model Settings
+model:
+  name: "gwen-3:8b"
+  version: "8b"
+  language: "vietnamese"
+  specialized_for: "vietnamese_news_analysis"
+
+# Resource Management
+resources:
+  # Memory allocation (8GB limit)
+  memory:
+    limit_gb: 8
+    reservation_gb: 6
+    warning_threshold_percent: 85
+    critical_threshold_percent: 95
+    cleanup_threshold_percent: 90
+    
+  # CPU allocation
+  cpu:
+    limit_cores: 4
+    reservation_cores: 2
+    max_utilization_percent: 80
+    
+  # Model loading
+  model_loading:
+    timeout_seconds: 600  # 10 minutes for initial load
+    retry_attempts: 3
+    retry_delay_seconds: 30
+
+# Performance Parameters
+performance:
+  # Model inference settings
+  inference:
+    temperature: 0.1
+    top_p: 0.9
+    top_k: 40
+    num_predict: 4096
+    num_ctx: 8192
+    repeat_penalty: 1.1
+    
+  # Request handling
+  requests:
+    max_concurrent: 2
+    timeout_seconds: 300  # 5 minutes per request
+    queue_size: 10
+    
+  # Connection management
+  connections:
+    pool_size: 10
+    keep_alive_seconds: 30
+    max_idle_seconds: 300
+
+# Vietnamese Content Analysis
+vietnamese_analysis:
+  # Language detection
+  language_detection:
+    threshold: 0.8
+    keywords:
+      - "tin tức"
+      - "báo chí"
+      - "thông tin"
+      - "bài viết"
+      - "tiêu đề"
+      - "nội dung"
+      - "tác giả"
+      - "ngày đăng"
+      - "chuyên mục"
+      - "danh mục"
+      
+  # Content processing
+  content:
+    max_length_chars: 50000
+    sample_size_chars: 5000
+    min_confidence_score: 0.7
+    
+  # Template generation
+  template:
+    min_selectors_per_element: 2
+    max_selectors_per_element: 5
+    confidence_threshold: 0.8
+    complexity_max_score: 10
+
+# Monitoring & Alerts
+monitoring:
+  # Health checks
+  health_check:
+    interval_seconds: 30
+    timeout_seconds: 30
+    start_period_seconds: 300  # 5 minutes for model loading
+    retries: 3
+    
+  # Performance monitoring
+  metrics:
+    response_time_threshold_ms: 30000  # 30 seconds warning
+    response_time_critical_ms: 60000   # 60 seconds critical
+    error_rate_threshold_percent: 10
+    
+  # Resource monitoring
+  resource_alerts:
+    memory_warning_percent: 85
+    memory_critical_percent: 95
+    cpu_warning_percent: 80
+    cpu_critical_percent: 90
+    
+  # Log settings
+  logging:
+    level: "INFO"
+    format: "json"
+    file: "/app/logs/gwen3-model.log"
+    max_size_mb: 100
+    max_files: 5
+
+# Caching
+cache:
+  # Analysis results caching
+  analysis_cache:
+    enabled: true
+    ttl_hours: 24
+    max_entries: 1000
+    cleanup_interval_minutes: 60
+    
+  # Model cache
+  model_cache:
+    enabled: true
+    keep_alive_minutes: 30
+    unload_delay_minutes: 10
+
+# Error Handling
+error_handling:
+  # Retry configuration
+  retry:
+    max_attempts: 3
+    initial_delay_seconds: 10
+    backoff_multiplier: 2.0
+    max_delay_seconds: 300
+    
+  # Timeout handling
+  timeouts:
+    connection_seconds: 30
+    read_seconds: 300
+    total_seconds: 300
+    
+  # Circuit breaker
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 5
+    recovery_timeout_seconds: 60
+    half_open_max_calls: 3
+
+# Development Settings
+development:
+  debug_enabled: false
+  verbose_logging: false
+  model_warmup: true
+  performance_profiling: false
+  
+# Production Settings
+production:
+  auto_scaling: false
+  load_balancing: false
+  backup_model: false
+  disaster_recovery: false

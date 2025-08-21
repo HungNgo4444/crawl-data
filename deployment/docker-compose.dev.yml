@@ -1,0 +1,64 @@
+# Development Environment Overrides
+# Use: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  enhanced-crawler-worker:
+    build:
+      context: ./apps/enhanced-crawler-worker
+      dockerfile: Dockerfile
+      target: dependencies  # Use development stage
+    volumes:
+      # Mount source code for live editing
+      - ./apps/enhanced-crawler-worker/src:/app/src
+      - ./apps/enhanced-crawler-worker/tests:/app/tests
+      - ./apps/enhanced-crawler-worker/config:/app/config
+    environment:
+      LOG_LEVEL: DEBUG
+      PYTHONDONTWRITEBYTECODE: 0  # Enable bytecode writing for debugging
+    command: python -m src.main --reload  # Auto-reload on changes
+
+  crawl4ai:
+    environment:
+      LOG_LEVEL: DEBUG
+    volumes:
+      # Mount additional development data
+      - ./apps/crawl4ai-main/test-data:/app/test-data
+
+  postgres:
+    environment:
+      POSTGRES_DB: crawler_dev_db
+    volumes:
+      # Mount development SQL scripts
+      - ./sql/dev_data.sql:/docker-entrypoint-initdb.d/02-dev-data.sql:ro
+    ports:
+      - "5433:5432"  # Different port for dev to avoid conflicts
+
+  # Development tools
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: crawler_pgadmin_dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@crawler.dev
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    volumes:
+      - ./config/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    networks:
+      - crawler-network
+    ports:
+      - "8082:80"
+    depends_on:
+      - postgres
+
+  # Development monitoring
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: crawler_redis_commander
+    environment:
+      REDIS_HOST: redis
+      REDIS_PASSWORD: crawler_redis_pass
+    networks:
+      - crawler-network
+    ports:
+      - "8083:8081"
+    depends_on:
+      - redis

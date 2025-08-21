@@ -1,0 +1,53 @@
+# Enhanced Crawler Worker Configuration
+# Default configuration for Vietnamese news crawler worker
+
+# Application settings
+app:
+  name: "Enhanced Crawler Worker"
+  version: "1.0.0"
+  debug: false
+  environment: "production"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "json"
+  output: "stdout"
+  file_path: "/app/logs/worker.log"
+  max_file_size: "10MB"
+  backup_count: 5
+
+# Vietnamese optimization
+vietnamese:
+  enable: true
+  content_threshold: 0.5
+  quality_threshold: 0.6
+  nlp_model: "underthesea"
+  diacritics_detection: true
+  
+# Performance settings
+performance:
+  max_concurrent_crawls: 10
+  max_urls_per_domain: 1000
+  request_timeout: 30
+  rate_limit_delay: 1.0
+  memory_limit: "2GB"
+  
+# Cache configuration
+cache:
+  enabled: true
+  ttl: 86400  # 24 hours
+  compression: "lz4"
+  directory: "/app/cache"
+  max_size: "1GB"
+
+# Feature flags
+features:
+  enable_rss_crawling: true
+  enable_sitemap_crawling: true
+  enable_category_crawling: true
+  enable_google_search_crawling: false  # Manual trigger only
+  enable_deep_crawling_fallback: true
+  enable_content_extraction: true
+  enable_vietnamese_scoring: true
+  enable_deduplication: true

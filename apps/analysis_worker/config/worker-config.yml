@@ -1,0 +1,133 @@
+# Analysis Worker Configuration
+# Vietnamese content analysis with GWEN-3
+
+worker:
+  id: "analysis-worker-001"
+  max_concurrent_analyses: 3
+  analysis_timeout_seconds: 300
+  polling_interval_seconds: 10
+  content_sample_size: 50000
+  max_content_samples: 5
+
+redis:
+  url: "redis://localhost:6379"
+  queue_names:
+    main: "domain_analysis_queue"
+    retry: "domain_analysis_retry_queue"
+    failed: "domain_analysis_failed_queue"
+  max_queue_depth: 50
+  retry_delay_base_seconds: 60
+  max_retry_delay_seconds: 3600
+
+database:
+  host: "localhost"
+  port: 5432
+  name: "crawler_db"
+  user: "crawler_user"
+  password: ""
+  pool_size: 20
+  max_overflow: 30
+  pool_timeout: 30
+  pool_recycle: 3600
+
+gwen3:
+  base_url: "http://localhost:11434"
+  model_name: "gwen-3:8b"
+  timeout_seconds: 300
+  max_retries: 3
+  retry_delay_seconds: 5
+  max_concurrent_requests: 2
+  connection_pool_size: 10
+  keep_alive_timeout: 60
+
+analysis:
+  vietnamese_content:
+    min_confidence_threshold: 0.3
+    sample_pages: 5
+    content_analysis_depth: "full"
+    
+  template_generation:
+    confidence_scoring: true
+    fallback_selectors: true
+    validation_enabled: true
+    expiration_days: 30
+    
+  url_discovery:
+    rss_discovery: true
+    sitemap_discovery: true
+    category_discovery: true
+    homepage_monitoring: true
+    max_urls_per_method: 50
+
+domain_validation:
+  timeout_seconds: 10
+  max_redirects: 5
+  min_content_size: 500
+  max_content_size: 10485760  # 10MB
+  ssl_verification: true
+  user_agent: "Domain-Analysis-Bot/1.0 (Vietnamese News Crawler)"
+
+monitoring:
+  metrics_enabled: true
+  prometheus_enabled: true
+  system_monitoring_interval: 30
+  performance_tracking: true
+  error_tracking: true
+  
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_enabled: true
+  file_path: "/app/logs/analysis_worker.log"
+  rotation: "daily"
+  retention_days: 7
+
+health_check:
+  enabled: true
+  port: 8080
+  endpoint: "/health"
+  interval_seconds: 30
+  timeout_seconds: 10
+
+# Vietnamese-specific configuration
+vietnamese:
+  content_indicators:
+    - "tin tức"
+    - "báo"
+    - "thời sự"
+    - "chính trị"
+    - "kinh tế"
+    - "xã hội"
+    - "thể thao"
+    - "giáo dục"
+    - "sức khỏe"
+    - "pháp luật"
+    
+  url_patterns:
+    article_patterns:
+      - "/tin-tuc/"
+      - "/bai-viet/"
+      - "/thoi-su/"
+      - "/chinh-tri/"
+      - "/kinh-te/"
+      - "/xa-hoi/"
+      - "/the-thao/"
+      
+  known_domains:
+    vnexpress.net:
+      confidence: 0.95
+      selectors:
+        headline: ["h1.title-news", ".title-detail h1"]
+        content: [".fck_detail", ".Normal"]
+        
+    dantri.com.vn:
+      confidence: 0.95
+      selectors:
+        headline: ["h1.title-page-detail"]
+        content: [".detail-content"]
+        
+    tuoitre.vn:
+      confidence: 0.95
+      selectors:
+        headline: ["h1.article-title"]
+        content: [".detail-content"]

@@ -1,0 +1,288 @@
+# Vietnamese Content Analysis Prompts
+# Specialized prompts for GWEN-3 model Vietnamese news analysis
+# Author: James (Dev Agent)
+# Date: 2025-08-11
+
+# System Prompts
+system_prompts:
+  vietnamese_analyzer: |
+    Bạn là GWEN-3, chuyên gia phân tích cấu trúc trang web tin tức tiếng Việt. 
+    Nhiệm vụ của bạn là phân tích HTML và tạo các CSS selector chính xác cho việc trích xuất nội dung.
+    
+    Nguyên tắc hoạt động:
+    - Luôn trả về kết quả dưới dạng JSON hợp lệ
+    - Đánh giá độ tin cậy của từng selector (0.0-1.0)
+    - Ưu tiên các selector ổn định và có ý nghĩa semantic
+    - Xem xét đặc thù của báo chí Việt Nam
+    - Cung cấp multiple backup selectors cho mỗi element
+
+  structure_analyst: |
+    Bạn là chuyên gia phân tích cấu trúc layout của trang web tin tức Việt Nam.
+    Hãy xác định pattern layout, navigation structure, và content organization.
+    
+    Yêu cầu:
+    - Phân loại layout type (standard, magazine, blog, portal)
+    - Xác định hierarchy của content
+    - Phát hiện pattern navigation và menu
+    - Đánh giá complexity và maintainability
+
+# Analysis Prompts
+analysis_prompts:
+  
+  # Main domain analysis prompt
+  domain_structure_analysis: |
+    Phân tích cấu trúc trang web tin tức tiếng Việt sau và tạo parsing template JSON chi tiết:
+
+    Domain: {domain_name}
+    URLs mẫu: {sample_urls}
+
+    HTML Content:
+    {html_content}
+
+    YÊU CẦU PHÂN TÍCH:
+    1. Xác định CSS selectors cho các elements chính:
+       - Tiêu đề bài viết (headline)
+       - Nội dung chính (main content)
+       - Tóm tắt/Lead (summary)
+       - Metadata (tác giả, ngày đăng, chuyên mục)
+       
+    2. Đánh giá độ tin cậy và ổn định của selectors
+    3. Phân tích cấu trúc navigation và layout
+    4. Xác định language và content quality
+
+    FORMAT RESPONSE (JSON):
+    {{
+      "confidence_score": 0.85,
+      "language_detected": "vietnamese",
+      "domain_type": "news_portal",
+      "parsing_template": {{
+        "headline": {{
+          "primary_selectors": ["h1.article-title", ".main-title"],
+          "backup_selectors": ["h1", ".title"],
+          "confidence": 0.9,
+          "notes": "Selector được test trên multiple pages"
+        }},
+        "content": {{
+          "primary_selectors": [".article-body", ".content-main"],
+          "backup_selectors": [".content", "article"],
+          "confidence": 0.85,
+          "notes": "Content wrapper có class name consistent"
+        }},
+        "summary": {{
+          "primary_selectors": [".article-summary", ".lead"],
+          "backup_selectors": [".excerpt", ".intro"],
+          "confidence": 0.7,
+          "notes": "Summary element không phải lúc nào cũng có"
+        }},
+        "metadata": {{
+          "author": {{
+            "selectors": [".author-name", ".byline", "[rel='author']"],
+            "confidence": 0.8
+          }},
+          "publish_date": {{
+            "selectors": [".publish-date", "time", ".date"],
+            "confidence": 0.9
+          }},
+          "category": {{
+            "selectors": [".category", ".section", ".tag"],
+            "confidence": 0.7
+          }},
+          "tags": {{
+            "selectors": [".tags a", ".keywords", ".article-tags"],
+            "confidence": 0.6
+          }}
+        }}
+      }},
+      "structure_analysis": {{
+        "layout_type": "standard_news",
+        "complexity_score": 5,
+        "vietnamese_content_ratio": 0.95,
+        "mobile_friendly": true,
+        "seo_optimized": true
+      }},
+      "recommendations": [
+        "Selector .article-title có độ tin cậy cao",
+        "Nên thêm fallback cho author metadata",
+        "Structure tương đối stable cho long-term use"
+      ],
+      "structure_fingerprint": "news_standard_v1"
+    }}
+
+  # Quick validation prompt
+  selector_validation: |
+    Kiểm tra và validate các CSS selectors sau cho domain {domain_name}:
+
+    Selectors cần test:
+    {selectors_to_test}
+
+    HTML Sample:
+    {html_sample}
+
+    Trả về JSON:
+    {{
+      "validation_results": [
+        {{
+          "selector": ".article-title",
+          "found": true,
+          "count": 1,
+          "confidence": 0.9,
+          "content_sample": "Tiêu đề bài viết...",
+          "issues": []
+        }}
+      ],
+      "overall_score": 0.85,
+      "recommendations": ["Selector suggestions..."]
+    }}
+
+  # Content extraction test
+  content_extraction_test: |
+    Test extraction với template sau trên domain {domain_name}:
+
+    Template:
+    {parsing_template}
+
+    HTML Content:
+    {test_content}
+
+    Trả về extracted data và đánh giá chất lượng:
+    {{
+      "extracted_data": {{
+        "headline": "Extracted headline text",
+        "content": "Extracted content...",
+        "author": "Author name",
+        "date": "2025-01-01"
+      }},
+      "extraction_quality": {{
+        "headline_accuracy": 0.9,
+        "content_completeness": 0.85,
+        "metadata_accuracy": 0.8
+      }},
+      "issues_found": [],
+      "improvement_suggestions": []
+    }}
+
+# Specialized Analysis Prompts
+specialized_prompts:
+  
+  # Mobile responsiveness analysis
+  mobile_analysis: |
+    Phân tích mobile responsiveness và tối ưu cho mobile của {domain_name}:
+    
+    Desktop HTML: {desktop_html}
+    Mobile HTML: {mobile_html}
+    
+    Xác định:
+    - Selector differences giữa desktop/mobile
+    - Layout changes ảnh hưởng extraction
+    - Responsive design patterns
+    - Recommendations cho mobile parsing
+
+  # Performance analysis
+  performance_analysis: |
+    Đánh giá performance impact của parsing template cho {domain_name}:
+    
+    Template: {parsing_template}
+    Page size: {page_size_kb}KB
+    DOM complexity: {dom_elements_count} elements
+    
+    Cung cấp:
+    - Performance score (1-10)
+    - Bottlenecks identification
+    - Optimization recommendations
+    - Alternative lightweight selectors
+
+  # Change detection
+  change_detection: |
+    So sánh cấu trúc page cũ vs mới để detect changes:
+    
+    Domain: {domain_name}
+    Old structure hash: {old_hash}
+    New HTML: {new_html}
+    Current template: {current_template}
+    
+    Identify:
+    - Structure changes detected
+    - Selector validity impact
+    - Template update requirements
+    - Migration recommendations
+
+# Error Handling Prompts
+error_prompts:
+  
+  # Fallback analysis when main analysis fails
+  fallback_analysis: |
+    Thực hiện fallback analysis cho {domain_name} khi analysis chính thất bại:
+    
+    Limited HTML: {html_snippet}
+    Error context: {error_info}
+    
+    Cung cấp basic template với:
+    - Simple selectors (h1, h2, div, p)
+    - Low confidence scores
+    - Generic extraction patterns
+    - Clear limitations noted
+
+  # Partial content analysis
+  partial_analysis: |
+    Phân tích partial content khi full page không available:
+    
+    Domain: {domain_name}
+    Available content: {partial_html}
+    Context: {analysis_context}
+    
+    Tạo best-effort template với:
+    - Confidence scores adjusted for partial data
+    - Assumptions clearly noted
+    - Recommendations for full analysis
+
+# Template Formats
+response_formats:
+  
+  # Standard JSON response format
+  standard_json: |
+    {{
+      "analysis_id": "unique_id",
+      "timestamp": "2025-01-01T00:00:00Z",
+      "domain": "domain.com",
+      "confidence_score": 0.0-1.0,
+      "language_detected": "vietnamese",
+      "parsing_template": {{ ... }},
+      "structure_analysis": {{ ... }},
+      "recommendations": [],
+      "warnings": [],
+      "errors": []
+    }}
+
+  # Simplified response for quick checks
+  simple_json: |
+    {{
+      "selectors": {{
+        "headline": "selector",
+        "content": "selector"
+      }},
+      "confidence": 0.0-1.0,
+      "status": "success|partial|failed"
+    }}
+
+# Quality Control
+quality_control:
+  
+  # Validation checklist
+  validation_checklist:
+    - "JSON format is valid"
+    - "Confidence scores are between 0.0-1.0"
+    - "At least headline and content selectors provided"
+    - "Vietnamese language detection accurate"
+    - "Selectors are specific enough to avoid false positives"
+    - "Backup selectors provided for critical elements"
+    - "Recommendations are actionable"
+    - "Structure fingerprint helps change detection"
+
+  # Common issues to avoid
+  avoid_issues:
+    - "Generic selectors like 'div', 'span' without class"
+    - "Overly specific selectors that break easily"
+    - "Missing confidence scores"
+    - "Invalid JSON syntax"
+    - "Non-Vietnamese language misdetection"
+    - "Empty or null selector values"

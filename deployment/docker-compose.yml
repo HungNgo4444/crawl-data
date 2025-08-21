@@ -1,0 +1,296 @@
+# 🚀 Complete Containerized System for Stories 1.1-1.3
+# AI-Powered Multi-Domain News Crawler System
+# Author: James (Full Stack Developer)
+# Date: 2025-08-12
+
+
+services:
+  #######################
+  # Story 1.1: Database Schema Foundation
+  #######################
+  
+  # PostgreSQL Database với domain management schema
+  postgres:
+    image: postgres:15-alpine
+    container_name: crawler_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: crawler_db
+      POSTGRES_USER: crawler_user  
+      POSTGRES_PASSWORD: crawler123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crawler_user -d crawler_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crawler-system
+
+  # pgAdmin Web Interface cho database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: crawler_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@crawler.dev
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - crawler-system
+    profiles:
+      - admin
+
+  #######################
+  # Story 1.2: GWEN-3 Model Deployment
+  #######################
+
+  # Ollama service với GWEN-3 model
+  ollama:
+    image: ollama/ollama:latest
+    container_name: crawler_ollama
+    restart: unless-stopped
+    
+    # GPU Support - GTX 1650 4GB Optimized
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+          memory: 2G
+          cpus: '2.0'
+        limits:
+          memory: 6G  # GTX 1650 4GB constraint
+          cpus: '4.0'
+    
+    # Environment variables optimized cho Vietnamese AI analysis
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_MODELS=/root/.ollama/models
+      - OLLAMA_NUM_PARALLEL=2
+      - OLLAMA_KEEP_ALIVE=600s
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    
+    ports:
+      - "11434:11434"
+    
+    volumes:
+      - ollama_models:/root/.ollama
+    
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   start_period: 30s
+    #   retries: 3
+    
+    networks:
+      - crawler-system
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  #######################  
+  # Story 1.3: Domain Analysis Worker
+  #######################
+
+  # Redis queue cho analysis job management
+  redis:
+    image: redis:7-alpine
+    container_name: crawler_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crawler-system
+
+  # Analysis Worker Service
+  analysis-worker:
+    build: ../apps/analysis_worker
+    container_name: crawler_analysis_worker
+    restart: unless-stopped
+    environment:
+      - WORKER_ID=worker-001
+      - LOG_LEVEL=INFO
+      - METRICS_ENABLED=true
+      - REDIS_URL=redis://redis:6379
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=crawler_db
+      - DB_USER=crawler_user
+      - DB_PASSWORD=crawler123
+      - GWEN3_URL=http://ollama:11434
+      - GWEN3_MODEL=qwen2.5:3b
+    ports:
+      - "8082:8080"  # Health check API
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    volumes:
+      - ../apps/analysis_worker/logs:/app/logs
+      - ../apps/analysis_worker/src:/app/src  # Development hot reload
+    networks:
+      - crawler-system
+
+  #######################
+  # Development Tools
+  #######################
+
+  # Enhanced Crawler Worker với Crawl4AI integration (Story 1.4)
+  enhanced-crawler-worker:
+    build:
+      context: ../apps/enhanced-crawler-worker
+      dockerfile: Dockerfile
+    image: enhanced-crawler-worker:latest
+    container_name: enhanced_crawler_worker
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: crawler_db
+      POSTGRES_USER: crawler_user
+      POSTGRES_PASSWORD: crawler123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      LOG_LEVEL: INFO
+      CACHE_DIR: /app/cache
+      MAX_CONCURRENT_CRAWLS: 10
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai/gpt-3.5-turbo}
+    volumes:
+      - crawler_cache:/app/cache
+      - crawler_logs:/app/logs
+      - /dev/shm:/dev/shm
+    ports:
+      - "8083:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - crawler-system
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis Commander cho queue management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: crawler_redis_commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - crawler-system
+    profiles:
+      - dev
+
+  # Prometheus cho metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: crawler_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../apps/analysis_worker/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - crawler-system
+    profiles:
+      - monitoring
+
+  # Grafana cho metrics visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: crawler_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ../apps/analysis_worker/config/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ../apps/analysis_worker/config/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - crawler-system
+    profiles:
+      - monitoring
+
+#######################
+# Persistent Volumes
+#######################
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  ollama_models:
+    driver: local
+  redis_data:
+    driver: local
+  crawler_cache:
+    driver: local
+  crawler_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+#######################
+# Networks
+#######################
+networks:
+  crawler-system:
+    driver: bridge
+    name: crawler-system

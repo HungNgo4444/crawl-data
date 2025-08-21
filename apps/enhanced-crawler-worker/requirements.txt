@@ -1,0 +1,39 @@
+# Enhanced Crawler Worker Requirements
+# Crawl4AI - main dependency (installs compatible versions)
+crawl4ai
+
+# Core dependencies - let crawl4ai manage versions
+asyncio
+httpx[http2]
+aiofiles
+
+# XML/HTML Processing
+lxml
+beautifulsoup4
+feedparser
+
+# Data Processing  
+pydantic
+python-dateutil
+
+# Compression & Caching
+lz4==4.3.2
+redis==5.0.1
+
+# Database
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-mock==3.12.0
+pytest-cov==4.1.0
+
+# Utilities
+python-dotenv==1.0.0
+structlog==23.2.0
+uvloop==0.19.0
+
+# Vietnamese text processing (optional - skip for now due to maturin dependency)
+# underthesea==6.7.0

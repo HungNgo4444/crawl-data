@@ -1,0 +1,372 @@
+# Performance Thresholds and Monitoring Configuration
+# Memory, CPU, and performance limits for GWEN-3 system
+# Author: James (Dev Agent)
+# Date: 2025-08-11
+
+# System Resource Thresholds
+system_resources:
+  
+  # Memory thresholds (8GB total allocation)
+  memory:
+    total_limit_gb: 8
+    total_limit_bytes: 8589934592
+    
+    # Alert thresholds
+    thresholds:
+      normal: 
+        percent: 70
+        bytes: 6012954014  # 5.6GB
+        action: "continue_normal_operation"
+        
+      warning:
+        percent: 85
+        bytes: 7301446397  # 6.8GB
+        action: "log_warning_reduce_cache"
+        
+      critical:
+        percent: 95
+        bytes: 8160287462  # 7.6GB
+        action: "emergency_cleanup_pause_requests"
+        
+      emergency:
+        percent: 98
+        bytes: 8418017241  # 7.8GB
+        action: "force_restart_container"
+    
+    # Cleanup actions
+    cleanup_actions:
+      - "clear_analysis_cache"
+      - "reduce_connection_pool"
+      - "pause_new_requests"
+      - "force_garbage_collection"
+      - "unload_inactive_models"
+  
+  # CPU thresholds (4 cores allocated)
+  cpu:
+    total_cores: 4
+    
+    thresholds:
+      normal:
+        percent: 60
+        action: "continue_normal_operation"
+        
+      warning:
+        percent: 80
+        action: "log_warning_throttle_requests"
+        
+      critical:
+        percent: 90
+        action: "emergency_throttle_pause_batch"
+        
+      emergency:
+        percent: 95
+        action: "pause_all_non_essential_operations"
+    
+    # CPU management actions
+    cpu_actions:
+      - "reduce_concurrent_requests"
+      - "increase_request_intervals"
+      - "pause_batch_processing"
+      - "lower_model_parameters"
+
+# Performance Thresholds
+performance_metrics:
+  
+  # Response time thresholds
+  response_time:
+    # Individual analysis request
+    single_analysis:
+      excellent_ms: 10000    # 10 seconds
+      good_ms: 30000        # 30 seconds  
+      acceptable_ms: 60000   # 1 minute
+      warning_ms: 120000    # 2 minutes
+      critical_ms: 300000   # 5 minutes (timeout)
+      
+    # Health check response
+    health_check:
+      excellent_ms: 1000     # 1 second
+      good_ms: 5000         # 5 seconds
+      warning_ms: 15000     # 15 seconds
+      critical_ms: 30000    # 30 seconds
+      
+    # Model loading time
+    model_loading:
+      excellent_ms: 30000    # 30 seconds
+      good_ms: 120000       # 2 minutes
+      acceptable_ms: 300000  # 5 minutes
+      warning_ms: 600000    # 10 minutes
+      critical_ms: 900000   # 15 minutes
+  
+  # Throughput thresholds
+  throughput:
+    # Analyses per hour
+    analyses_per_hour:
+      excellent: 100
+      good: 50
+      acceptable: 20
+      warning: 10
+      critical: 5
+      
+    # Success rate percentage
+    success_rate_percent:
+      excellent: 95
+      good: 90
+      acceptable: 85
+      warning: 80
+      critical: 70
+  
+  # Quality thresholds
+  quality_metrics:
+    # Analysis confidence scores
+    confidence_score:
+      excellent: 0.9
+      good: 0.8
+      acceptable: 0.7
+      warning: 0.6
+      critical: 0.5
+      
+    # Vietnamese detection accuracy
+    language_detection:
+      excellent: 0.95
+      good: 0.9
+      acceptable: 0.85
+      warning: 0.8
+      critical: 0.7
+
+# Monitoring Configuration
+monitoring:
+  
+  # Health check intervals
+  health_checks:
+    # System health check frequency
+    system_health:
+      interval_seconds: 30
+      timeout_seconds: 30
+      retries: 3
+      
+    # Model availability check
+    model_availability:
+      interval_seconds: 60
+      timeout_seconds: 15
+      retries: 2
+      
+    # Performance check
+    performance_check:
+      interval_seconds: 120
+      timeout_seconds: 60
+      retries: 1
+  
+  # Metric collection
+  metrics_collection:
+    # System metrics
+    system_metrics:
+      enabled: true
+      interval_seconds: 10
+      retention_hours: 24
+      
+    # Application metrics
+    app_metrics:
+      enabled: true
+      interval_seconds: 30
+      retention_hours: 168  # 1 week
+      
+    # Custom metrics
+    custom_metrics:
+      enabled: true
+      interval_seconds: 60
+      retention_hours: 720  # 1 month
+
+# Alert Configuration
+alerts:
+  
+  # Alert levels
+  levels:
+    info:
+      notification: true
+      email: false
+      slack: false
+      log_level: "INFO"
+      
+    warning:
+      notification: true
+      email: true
+      slack: true
+      log_level: "WARNING"
+      escalation_delay_minutes: 15
+      
+    critical:
+      notification: true
+      email: true
+      slack: true
+      log_level: "ERROR"
+      immediate_escalation: true
+      
+    emergency:
+      notification: true
+      email: true
+      slack: true
+      log_level: "CRITICAL"
+      immediate_escalation: true
+      auto_action: true
+  
+  # Alert rules
+  alert_rules:
+    # Memory alerts
+    high_memory_usage:
+      metric: "memory_usage_percent"
+      threshold: 85
+      duration_minutes: 5
+      level: "warning"
+      
+    critical_memory_usage:
+      metric: "memory_usage_percent"
+      threshold: 95
+      duration_minutes: 2
+      level: "critical"
+      
+    # CPU alerts
+    high_cpu_usage:
+      metric: "cpu_usage_percent"
+      threshold: 80
+      duration_minutes: 10
+      level: "warning"
+      
+    # Response time alerts
+    slow_response_time:
+      metric: "avg_response_time_ms"
+      threshold: 60000
+      duration_minutes: 5
+      level: "warning"
+      
+    # Error rate alerts
+    high_error_rate:
+      metric: "error_rate_percent"
+      threshold: 20
+      duration_minutes: 3
+      level: "critical"
+      
+    # Model availability alerts
+    model_unavailable:
+      metric: "model_availability"
+      threshold: 0
+      duration_minutes: 1
+      level: "critical"
+
+# Scaling Configuration
+scaling:
+  
+  # Automatic scaling thresholds
+  auto_scaling:
+    enabled: false  # Disabled for single container setup
+    
+    scale_up_triggers:
+      - metric: "cpu_usage_percent"
+        threshold: 70
+        duration_minutes: 10
+        
+      - metric: "queue_length"
+        threshold: 5
+        duration_minutes: 5
+        
+    scale_down_triggers:
+      - metric: "cpu_usage_percent"
+        threshold: 30
+        duration_minutes: 15
+        
+      - metric: "queue_length"
+        threshold: 1
+        duration_minutes: 10
+  
+  # Manual scaling guidelines
+  manual_scaling:
+    scale_up_indicators:
+      - "Consistent high CPU usage (>80%) for >15 minutes"
+      - "Memory usage consistently >85%"
+      - "Response times consistently >60 seconds"
+      - "Queue length consistently >5 requests"
+      
+    scale_down_indicators:
+      - "Low resource utilization (<30%) for >30 minutes"
+      - "No queued requests for >20 minutes"
+      - "Response times consistently <10 seconds"
+
+# Recovery Procedures
+recovery:
+  
+  # Automatic recovery actions
+  auto_recovery:
+    enabled: true
+    
+    # Memory recovery
+    high_memory_recovery:
+      triggers:
+        - "memory_usage_percent > 90"
+      actions:
+        - "clear_analysis_cache"
+        - "reduce_connection_pool_50_percent"
+        - "pause_new_requests_60_seconds"
+        
+    # CPU recovery  
+    high_cpu_recovery:
+      triggers:
+        - "cpu_usage_percent > 90"
+      actions:
+        - "reduce_concurrent_requests_50_percent"
+        - "increase_request_intervals_2x"
+        
+    # Model failure recovery
+    model_failure_recovery:
+      triggers:
+        - "model_availability == false"
+        - "consecutive_failures > 5"
+      actions:
+        - "restart_ollama_service"
+        - "reload_model"
+        - "clear_all_caches"
+  
+  # Manual recovery procedures
+  manual_recovery:
+    memory_issues:
+      steps:
+        - "Check container memory limits"
+        - "Review memory usage patterns"
+        - "Clear caches manually"
+        - "Restart container if needed"
+        
+    performance_issues:
+      steps:
+        - "Check model loading status"
+        - "Review request queue length"
+        - "Analyze slow queries"
+        - "Optimize model parameters"
+        
+    model_issues:
+      steps:
+        - "Verify model files integrity"
+        - "Check Ollama service status"
+        - "Review error logs"
+        - "Perform model reload"
+
+# Testing Thresholds
+testing:
+  
+  # Load testing parameters
+  load_testing:
+    concurrent_users: [1, 5, 10, 20]
+    duration_minutes: [5, 15, 30, 60]
+    
+    success_criteria:
+      response_time_95_percentile_ms: 60000
+      error_rate_percent: 5
+      memory_usage_max_percent: 90
+      cpu_usage_avg_percent: 70
+  
+  # Stress testing parameters
+  stress_testing:
+    max_concurrent_requests: 50
+    duration_minutes: 30
+    
+    acceptable_degradation:
+      response_time_increase_factor: 3
+      success_rate_min_percent: 60
+      recovery_time_max_minutes: 5
