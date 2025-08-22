@@ -14,9 +14,10 @@ Features:
 """
 
 import asyncio
+import os
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 from urllib.parse import urljoin, urlparse
 import hashlib
 import json
@@ -52,6 +53,7 @@ class RSSItem:
     categories: List[str] = None
     author: Optional[str] = None
     content: Optional[str] = None
+    url_image: Optional[str] = None  # Image URL from RSS or crawled content
     crawled_content: Optional[str] = None  # Full content from Crawl4AI
     crawl_metadata: Dict[str, Any] = None  # Metadata from Crawl4AI extraction
     
@@ -491,6 +493,44 @@ class RSSCrawler:
             content_elem = item_elem.find('content:encoded', {'content': 'http://purl.org/rss/1.0/modules/content/'})
             content = content_elem.text.strip() if content_elem is not None and content_elem.text else None
             
+            # Extract image URL
+            url_image = None
+            # Try multiple image sources
+            image_sources = [
+                item_elem.find('enclosure[@type="image/jpeg"]'),
+                item_elem.find('enclosure[@type="image/png"]'),
+                item_elem.find('enclosure[@type="image/gif"]'),
+                item_elem.find('media:content[@medium="image"]', {'media': 'http://search.yahoo.com/mrss/'}),
+                item_elem.find('media:thumbnail', {'media': 'http://search.yahoo.com/mrss/'}),
+                item_elem.find('image'),
+                item_elem.find('.//img')
+            ]
+            
+            for img_elem in image_sources:
+                if img_elem is not None:
+                    # Get URL from different attributes
+                    img_url = img_elem.get('url') or img_elem.get('src') or img_elem.get('href')
+                    if img_url:
+                        # Make absolute URL
+                        if not img_url.startswith('http'):
+                            base_url = f"{urlparse(feed_url).scheme}://{urlparse(feed_url).netloc}"
+                            img_url = urljoin(base_url, img_url)
+                        url_image = img_url
+                        break
+            
+            # If no image found, try to extract from description or content
+            if not url_image and (description or content):
+                import re
+                text_to_search = content or description
+                img_pattern = r'<img[^>]+src=["\']([^"\'>]+)["\']'
+                img_matches = re.findall(img_pattern, text_to_search, re.IGNORECASE)
+                if img_matches:
+                    img_url = img_matches[0]
+                    if not img_url.startswith('http'):
+                        base_url = f"{urlparse(feed_url).scheme}://{urlparse(feed_url).netloc}"
+                        img_url = urljoin(base_url, img_url)
+                    url_image = img_url
+            
             # Create RSS item
             rss_item = RSSItem(
                 title=title,
@@ -500,7 +540,8 @@ class RSSCrawler:
                 guid=guid,
                 categories=categories,
                 author=author,
-                content=content
+                content=content,
+                url_image=url_image
             )
             
             return rss_item
@@ -561,14 +602,28 @@ class RSSCrawler:
                     
                     if result and result.success:
                         item.crawled_content = result.cleaned_html or result.markdown
+                        
+                        # Extract image from crawled content if not already found
+                        if not item.url_image and item.crawled_content:
+                            import re
+                            img_pattern = r'<img[^>]+src=["\']([^"\'>]+)["\']'
+                            img_matches = re.findall(img_pattern, item.crawled_content, re.IGNORECASE)
+                            if img_matches:
+                                img_url = img_matches[0]
+                                if not img_url.startswith('http'):
+                                    base_url = f"{urlparse(item.link).scheme}://{urlparse(item.link).netloc}"
+                                    img_url = urljoin(base_url, img_url)
+                                item.url_image = img_url
+                        
                         item.crawl_metadata = {
                             "success": True,
                             "status_code": getattr(result, 'status_code', None),
                             "word_count": len(item.crawled_content.split()) if item.crawled_content else 0,
                             "extraction_time": getattr(result, 'response_time', None),
-                            "crawl_timestamp": datetime.utcnow().isoformat()
+                            "crawl_timestamp": datetime.utcnow().isoformat(),
+                            "image_extracted": bool(item.url_image)
                         }
-                        self.logger.debug(f"Successfully crawled {len(item.crawled_content)} chars from {item.link}", tag="RSS_CRAWLER")
+                        self.logger.debug(f"Successfully crawled {len(item.crawled_content)} chars from {item.link} (image: {bool(item.url_image)})", tag="RSS_CRAWLER")
                     else:
                         item.crawl_metadata = {
                             "success": False, 

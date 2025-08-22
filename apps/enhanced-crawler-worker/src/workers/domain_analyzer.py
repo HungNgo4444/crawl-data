@@ -101,90 +101,160 @@ class DomainAnalyzer:
         if not url_example:
             return {"error": f"No url_example found for domain: {domain_name}"}
         
+        # Set UTF-8 encoding cho toàn bộ environment
+        import sys
+        import os
+        import locale
+        
+        # Fix encoding environment variables
+        os.environ['PYTHONIOENCODING'] = 'utf-8'
+        os.environ['PYTHONLEGACYWINDOWSSTDIO'] = '1'
+        
+        # Set console encoding if supported
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+            sys.stderr.reconfigure(encoding='utf-8')
+        except AttributeError:
+            # Python < 3.7 compatibility
+            pass
+        
+        # Set locale to UTF-8 if possible
+        try:
+            locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+        except locale.Error:
+            try:
+                locale.setlocale(locale.LC_ALL, 'C.UTF-8')
+            except locale.Error:
+                pass
+        
         print(f"Analyzing domain structure for {domain_name}")
         print(f"Using URL example: {url_example}")
         
-        # Crawl trang để analyze structure với verbose=False
-        async with AsyncWebCrawler(verbose=False) as crawler:
-            result = await crawler.arun(url=url_example)
-            
-            if not result.success:
-                return {"error": f"Failed to crawl URL: {url_example}"}
-            
-            # Test các selector patterns để tìm selectors hoạt động
-            working_selectors = await self._test_selectors(result.html, url_example)
-            
-            # Generate schema từ working selectors
-            schema = self._generate_schema(domain_name, working_selectors)
-            
-            return {
-                "domain": domain_name,
-                "url_example": url_example,
-                "schema": schema,
-                "working_selectors": working_selectors
-            }
+        try:
+            # Crawl trang để analyze structure với proper UTF-8 handling
+            async with AsyncWebCrawler(verbose=False) as crawler:
+                result = await crawler.arun(url=url_example)
+                
+                if not result.success:
+                    return {"error": f"Failed to crawl URL: {url_example}"}
+                
+                # Test các selector patterns để tìm selectors hoạt động
+                working_selectors = await self._test_selectors(result.html, url_example)
+                
+                # Generate schema từ working selectors
+                schema = self._generate_schema(domain_name, working_selectors)
+                
+                return {
+                    "domain": domain_name,
+                    "url_example": url_example,
+                    "schema": schema,
+                    "working_selectors": working_selectors
+                }
+        
+        except UnicodeEncodeError as e:
+            return {"error": f"Unicode encoding error: {e}. Try using UTF-8 console."}
+        except Exception as e:
+            return {"error": f"Analysis error: {e}"}
     
-    async def _test_selectors(self, html: str, url: str) -> Dict:
+    async def test_with_existing_html(self, html_file_path: str, url: str) -> Dict:
         """
-        Test các CSS selectors trên HTML để tìm selectors hoạt động
+        Test selectors với HTML file đã có sẵn
         
         Args:
-            html: HTML content
-            url: URL gốc
+            html_file_path: Path to HTML file  
+            url: Original URL
             
         Returns:
             Dict: Working selectors for each field
         """
+        try:
+            with open(html_file_path, 'r', encoding='utf-8') as f:
+                html = f.read()
+            return await self._test_selectors(html, url)
+        except Exception as e:
+            return {"error": f"Failed to read HTML file: {e}"}
+    
+    async def _test_selectors(self, html: str, url: str) -> Dict:
+        """
+        Test các CSS selectors trên HTML để tìm selectors hoạt động
+        """
         working_selectors = {}
+        
+        # Set UTF-8 encoding
+        import sys
+        import os
+        os.environ['PYTHONIOENCODING'] = 'utf-8'
+        os.environ['PYTHONLEGACYWINDOWSSTDIO'] = '1'
+        
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+            sys.stderr.reconfigure(encoding='utf-8')
+        except:
+            pass
+        
+        # Test tất cả selectors cùng lúc với 1 schema duy nhất
+        all_fields = []
+        field_mapping = {}
         
         for field_name, selectors in self.selector_patterns.items():
             working_selectors[field_name] = []
             
-            for selector in selectors:
-                # Test từng selector với temporary schema
-                test_schema = {
-                    "name": "test",
-                    "baseSelector": "body",
-                    "fields": [
-                        {
-                            "name": "test_field",
-                            "selector": selector,
-                            "type": "text" if field_name != "images" else "list",
-                        }
-                    ]
+            for i, selector in enumerate(selectors):
+                field_id = f"{field_name}_{i}"
+                field_mapping[field_id] = {"field_name": field_name, "selector": selector}
+                
+                field_config = {
+                    "name": field_id,
+                    "selector": selector,
+                    "type": "text" if field_name != "images" else "list"
                 }
                 
                 if field_name == "images":
-                    test_schema["fields"][0]["fields"] = [
+                    field_config["fields"] = [
                         {"name": "src", "selector": "", "type": "attribute", "attribute": "src"}
                     ]
                 
-                try:
-                    # Test selector với Crawl4AI
-                    extraction_strategy = JsonCssExtractionStrategy(test_schema)
-                    
-                    async with AsyncWebCrawler(verbose=False) as crawler:
-                        test_result = await crawler.aprocess_html(
-                            url=url,
-                            html=html,
-                            extracted_content="",
-                            config=None,
-                            extraction_strategy=extraction_strategy
-                        )
+                all_fields.append(field_config)
+        
+        # Test tất cả với 1 schema
+        test_schema = {
+            "name": "test_all",
+            "baseSelector": "body",
+            "fields": all_fields
+        }
+        
+        try:
+            from crawl4ai import CrawlerRunConfig
+            
+            extraction_strategy = JsonCssExtractionStrategy(test_schema)
+            config = CrawlerRunConfig(extraction_strategy=extraction_strategy)
+            
+            async with AsyncWebCrawler(verbose=False) as crawler:
+                test_result = await crawler.aprocess_html(
+                    url=url,
+                    html=html,
+                    extracted_content="",
+                    screenshot_data=None,
+                    pdf_data=None,
+                    verbose=False,
+                    config=config
+                )
+                
+                if test_result.extracted_content:
+                    data = json.loads(test_result.extracted_content)
+                    if isinstance(data, list) and data:
+                        result_data = data[0]
                         
-                        if test_result.extracted_content:
-                            data = json.loads(test_result.extracted_content)
-                            if isinstance(data, list) and data:
-                                test_value = data[0].get("test_field")
-                                if test_value:  # Selector có data
-                                    working_selectors[field_name].append({
-                                        "selector": selector,
-                                        "sample_data": str(test_value)[:100] + "..." if len(str(test_value)) > 100 else str(test_value)
-                                    })
-                                    
-                except Exception as e:
-                    # Selector không hoạt động, bỏ qua
-                    continue
+                        for field_id, field_info in field_mapping.items():
+                            test_value = result_data.get(field_id)
+                            if test_value:
+                                field_name = field_info["field_name"]
+                                selector = field_info["selector"]
+                                
+                                working_selectors[field_name].append(selector)
+                                
+        except Exception as e:
+            print(f"Selector testing error: {e}")
         
         return working_selectors
     
@@ -207,56 +277,50 @@ class DomainAnalyzer:
         
         # Add title field
         if working_selectors.get("title"):
-            best_title_selector = working_selectors["title"][0]["selector"]
             schema["fields"].append({
                 "name": "title",
-                "selector": best_title_selector,
+                "selector": working_selectors["title"][0],
                 "type": "text"
             })
         
         # Add author field
         if working_selectors.get("author"):
-            best_author_selector = working_selectors["author"][0]["selector"]
             schema["fields"].append({
                 "name": "author",
-                "selector": best_author_selector,
+                "selector": working_selectors["author"][0],
                 "type": "text"
             })
         
         # Add category field
         if working_selectors.get("category"):
-            best_category_selector = working_selectors["category"][0]["selector"]
             schema["fields"].append({
                 "name": "category",
-                "selector": best_category_selector,
+                "selector": working_selectors["category"][0],
                 "type": "text"
             })
         
         # Add publish_date field
         if working_selectors.get("publish_date"):
-            best_date_selector = working_selectors["publish_date"][0]["selector"]
             schema["fields"].append({
                 "name": "publish_date",
-                "selector": best_date_selector,
+                "selector": working_selectors["publish_date"][0],
                 "type": "text",
                 "attribute": "datetime"
             })
         
         # Add content field
         if working_selectors.get("content"):
-            best_content_selector = working_selectors["content"][0]["selector"]
             schema["fields"].append({
                 "name": "content",
-                "selector": best_content_selector,
+                "selector": working_selectors["content"][0],
                 "type": "text"
             })
         
         # Add images field
         if working_selectors.get("images"):
-            best_image_selector = working_selectors["images"][0]["selector"]
             schema["fields"].append({
                 "name": "images",
-                "selector": best_image_selector,
+                "selector": working_selectors["images"][0],
                 "type": "list",
                 "fields": [
                     {
@@ -283,24 +347,34 @@ class DomainAnalyzer:
         Returns:
             List: Analysis results cho tất cả domains
         """
+        import subprocess
+        
         try:
-            conn = psycopg2.connect(**self.db_config)
-            cur = conn.cursor()
+            # Get domains using Docker exec như các method khác
+            cmd = [
+                'docker', 'exec', '-e', 'PGPASSWORD=crawler123',
+                'crawler_postgres', 'psql', 
+                '-h', 'localhost', '-U', 'crawler_user', '-d', 'crawler_db',
+                '-t', '-c', 
+                "SELECT name FROM domains WHERE url_example IS NOT NULL AND status = 'ACTIVE' ORDER BY name;"
+            ]
             
-            cur.execute(
-                "SELECT name FROM domains WHERE url_example IS NOT NULL ORDER BY name;"
-            )
+            result = subprocess.run(cmd, capture_output=True, text=True)
             
-            domains = [row[0] for row in cur.fetchall()]
+            if result.returncode != 0:
+                return [{"error": f"Database query error: {result.stderr}"}]
+            
+            # Parse domain names
+            domains = []
+            for line in result.stdout.strip().split('\n'):
+                domain = line.strip()
+                if domain and domain != '':
+                    domains.append(domain)
             
         except Exception as e:
             return [{"error": f"Database error: {e}"}]
-        finally:
-            if 'cur' in locals():
-                cur.close()
-            if 'conn' in locals():
-                conn.close()
         
+        # Analyze từng domain
         results = []
         for domain_name in domains:
             result = await self.analyze_domain_structure(domain_name)
@@ -374,24 +448,34 @@ class DomainAnalyzer:
         Returns:
             List: Analysis results với save status cho tất cả domains
         """
+        import subprocess
+        
         try:
-            conn = psycopg2.connect(**self.db_config)
-            cur = conn.cursor()
+            # Get domains using Docker exec
+            cmd = [
+                'docker', 'exec', '-e', 'PGPASSWORD=crawler123',
+                'crawler_postgres', 'psql', 
+                '-h', 'localhost', '-U', 'crawler_user', '-d', 'crawler_db',
+                '-t', '-c', 
+                "SELECT name FROM domains WHERE url_example IS NOT NULL AND status = 'ACTIVE' ORDER BY name;"
+            ]
             
-            cur.execute(
-                "SELECT name FROM domains WHERE url_example IS NOT NULL ORDER BY name;"
-            )
+            result = subprocess.run(cmd, capture_output=True, text=True)
             
-            domains = [row[0] for row in cur.fetchall()]
+            if result.returncode != 0:
+                return [{"error": f"Database query error: {result.stderr}"}]
+            
+            # Parse domain names
+            domains = []
+            for line in result.stdout.strip().split('\n'):
+                domain = line.strip()
+                if domain and domain != '':
+                    domains.append(domain)
             
         except Exception as e:
             return [{"error": f"Database error: {e}"}]
-        finally:
-            if 'cur' in locals():
-                cur.close()
-            if 'conn' in locals():
-                conn.close()
         
+        # Analyze và save từng domain
         results = []
         for domain_name in domains:
             print(f"\n=== Processing {domain_name} ===")
@@ -403,19 +487,102 @@ class DomainAnalyzer:
 
 # Example usage
 if __name__ == "__main__":
-    async def main():
+    import os
+    import sys
+    import locale
+    
+    # Fix encoding cho Windows - comprehensive UTF-8 setup
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
+    os.environ['PYTHONLEGACYWINDOWSSTDIO'] = '1'
+    
+    # Set console encoding to UTF-8
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except AttributeError:
+        # Python < 3.7 fallback
+        import codecs
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
+        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer)
+    
+    # Set locale to UTF-8 if possible
+    try:
+        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    except locale.Error:
+        try:
+            locale.setlocale(locale.LC_ALL, 'C.UTF-8')
+        except locale.Error:
+            print("Warning: Could not set UTF-8 locale")
+    
+    print("UTF-8 encoding configured successfully")
+    
+    async def generate_all_schemas():
+        """Generate schemas cho tất cả domains có url_example trong database"""
         analyzer = DomainAnalyzer()
         
-        # Test single domain first
-        print("Testing single domain: vnexpress.net")
-        result = await analyzer.analyze_and_save_domain("vnexpress.net")
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        # Query tất cả domains có url_example từ database thay vì hardcode
+        import subprocess
         
-        # # Analyze all domains và save schemas
-        # results = await analyzer.analyze_and_save_all_domains()
-        # print(f"\nProcessed {len(results)} domains")
+        try:
+            # Get all domains có url_example từ database
+            cmd = [
+                'docker', 'exec', '-e', 'PGPASSWORD=crawler123',
+                'crawler_postgres', 'psql', 
+                '-h', 'localhost', '-U', 'crawler_user', '-d', 'crawler_db',
+                '-t', '-c', 
+                "SELECT name FROM domains WHERE url_example IS NOT NULL AND status = 'ACTIVE' ORDER BY name;"
+            ]
+            
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            
+            if result.returncode != 0:
+                print(f"Database query error: {result.stderr}")
+                return
+            
+            # Parse domain names từ database result
+            domains = []
+            for line in result.stdout.strip().split('\n'):
+                domain = line.strip()
+                if domain and domain != '':
+                    domains.append(domain)
+            
+            if not domains:
+                print("No domains with url_example found in database")
+                return
+                
+            print(f"Found {len(domains)} domains to analyze: {domains}")
+            
+        except Exception as e:
+            print(f"Error querying domains: {e}")
+            return
         
-        # success_count = sum(1 for r in results if r.get("saved_to_db"))
-        # print(f"Successfully saved schemas for {success_count} domains")
+        # Analyze từng domain sử dụng REAL analysis thay vì mock
+        for domain_name in domains:
+            print(f"\n=== Processing {domain_name} ===")
+            
+            try:
+                # Sử dụng real analysis method thay vì mock data
+                result = await analyzer.analyze_and_save_domain(domain_name)
+                
+                if "error" in result:
+                    print(f"[ERROR] {result['error']}")
+                    continue
+                
+                if result.get("saved_to_db"):
+                    print(f"[OK] Real schema analyzed and saved for {domain_name}")
+                    print(f"URL analyzed: {result.get('url_example', 'N/A')}")
+                    
+                    # Show working selectors count only
+                    working_selectors = result.get("working_selectors", {})
+                    total_selectors = sum(len(selectors) for selectors in working_selectors.values())
+                    print(f"  Found {total_selectors} working selectors")
+                else:
+                    print(f"[ERROR] Failed to save schema for {domain_name}")
+                    
+            except Exception as e:
+                print(f"[ERROR] Exception analyzing {domain_name}: {e}")
+                continue
+        
+        print(f"\n=== Completed real analysis for all {len(domains)} domains ===")
     
-    asyncio.run(main())
+    asyncio.run(generate_all_schemas())
