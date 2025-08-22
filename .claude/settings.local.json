@@ -127,7 +127,12 @@
       "Bash(git remote set-url:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"\nUPDATE domains SET url_example = ''https://vnexpress.net/roddick-alcaraz-sai-lam-khi-an-ui-sinner-4929954.html'' WHERE name = ''vnexpress.net'';\nUPDATE domains SET url_example = ''https://dantri.com.vn/xa-hoi/bo-chinh-tri-cho-y-kien-ve-phuong-an-nhan-su-cua-ha-noi-tphcm-20250821182414702.htm'' WHERE name = ''dantri.com.vn'';\nUPDATE domains SET url_example = ''https://tuoitre.vn/thuc-hu-vu-negav-uy-quyen-cong-ty-luat-xu-ly-cac-thong-tin-vu-khong-xuc-pham-20250821181157393.htm'' WHERE name = ''tuoitre.vn'';\nUPDATE domains SET url_example = ''https://thanhnien.vn/di-xe-bus-bat-tau-dien-tu-som-de-kip-xem-tong-hop-luyen-dieu-binh-185250821191947493.htm'' WHERE name = ''thanhnien.vn'';\nUPDATE domains SET url_example = ''https://www.24h.com.vn/bong-da/phong-vien-brunei-tuyen-bo-bat-ngo-u22-viet-nam-ghi-12-ban-khong-bang-u22-thai-lan-c48a1104089.html'' WHERE name = ''24h.com.vn'' OR name = ''www.24h.com.vn'';\n\")",
+      "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"SELECT name, url_example FROM domains WHERE url_example IS NOT NULL ORDER BY name;\")",
+      "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"ALTER TABLE domains ADD COLUMN IF NOT EXISTS css_selectors JSONB DEFAULT ''{}'';\")",
+      "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"ALTER TABLE domains ADD COLUMN IF NOT EXISTS generated_schema JSONB DEFAULT ''{}'';\")",
+      "Bash(del:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",
