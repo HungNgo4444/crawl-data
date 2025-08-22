@@ -78,8 +78,35 @@ def export_results_to_json(results, filename=None):
     return filepath
 
 
+def test_single_url(url: str):
+    """Test extraction for a single URL"""
+    print(f"\n=== Testing single URL ===")
+    print(f"URL: {url}")
+    
+    processor = ArticleProcessor()
+    result = processor.extract_single_url(url)
+    
+    if result.get('success'):
+        print(f"Successfully extracted article")
+        print(f"  Processing time: {result['processing_time']} seconds")
+        
+        if result['articles']:
+            article = result['articles'][0]
+            try:
+                print(f"  Title: {article['title'][:100]}...")
+            except UnicodeEncodeError:
+                print(f"  Title: [Vietnamese content - {len(article['title'])} chars]")
+            print(f"  Content length: {len(article['content'])} chars")
+            print(f"  Authors: {len(article['author'])} authors")
+            print(f"  Image: {'Yes' if article['url_image'] else 'No'}")
+    else:
+        print(f"Failed: {result.get('error', 'Unknown error')}")
+    
+    return result
+
+
 def main():
-    """Main test function"""
+    """Main test function with options"""
     print("Testing Newspaper4k Content Extractor")
     print("=" * 50)
     
@@ -92,13 +119,41 @@ def main():
         
         print("Database connection successful")
         
-        # Test specific domains (from database)
-        test_domains = ['vnexpress.net', 'dantri.com.vn', 'tuoitre.vn']
+        # Ask user for test type
+        print("\nChoose test type:")
+        print("1. Test domains (multiple articles from domains)")
+        print("2. Test single URL (extract one specific article)")
+        print("3. Both")
+        
+        choice = input("\nEnter choice (1/2/3): ").strip()
+        
         all_results = []
         
-        for domain in test_domains:
-            result = test_single_domain(domain, max_articles=3)
-            all_results.append(result)
+        if choice in ['1', '3']:
+            print("\n" + "=" * 30)
+            print("TESTING DOMAINS")
+            print("=" * 30)
+            
+            # Test specific domains (from database)
+            test_domains = ['vnexpress.net', 'dantri.com.vn', 'tuoitre.vn']
+            
+            for domain in test_domains:
+                result = test_single_domain(domain, max_articles=3)
+                all_results.append(result)
+        
+        if choice in ['2', '3']:
+            print("\n" + "=" * 30)
+            print("TESTING SINGLE URLs")
+            print("=" * 30)
+            
+            # Test specific URLs
+            test_urls = [
+                "https://thanhnien.vn/thu-tuong-yeu-cau-xem-lai-tinh-trang-thieu-giao-vien-nhung-con-bien-che-chua-tuyen-dung-185250822195656634.htm"
+            ]
+            
+            for url in test_urls:
+                result = test_single_url(url)
+                all_results.append(result)
         
         # Export results
         export_results_to_json(all_results)

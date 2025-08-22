@@ -86,7 +86,8 @@ class ArticleProcessor:
             "articles": articles,
             "errors": errors,
             "processing_time": round(processing_time, 2),
-            "success": True
+            "success": True,
+            "type": "domain"
         }
         
         return result
@@ -178,3 +179,42 @@ class ArticleProcessor:
     def get_all_domains(self) -> List[Dict]:
         """Get all active domains from database"""
         return self.db.get_active_domains()
+    
+    def extract_single_url(self, url: str) -> Dict:
+        """Extract article from single URL"""
+        start_time = time.time()
+        
+        print(f"Processing single URL: {url}")
+        
+        article_data = self._extract_article(url)
+        processing_time = time.time() - start_time
+        
+        if article_data:
+            result = {
+                "url": url,
+                "extraction_time": datetime.utcnow().isoformat(),
+                "total_articles": 1,
+                "success_count": 1,
+                "articles": [article_data],
+                "errors": [],
+                "processing_time": round(processing_time, 2),
+                "success": True,
+                "type": "single_url"
+            }
+        else:
+            result = {
+                "url": url,
+                "extraction_time": datetime.utcnow().isoformat(),
+                "total_articles": 0,
+                "success_count": 0,
+                "articles": [],
+                "errors": [{
+                    "url": url,
+                    "error": "Failed to extract content"
+                }],
+                "processing_time": round(processing_time, 2),
+                "success": False,
+                "type": "single_url"
+            }
+        
+        return result

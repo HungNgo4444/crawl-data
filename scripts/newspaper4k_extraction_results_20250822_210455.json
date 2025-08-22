@@ -1,0 +1,159 @@
+[
+  {
+    "domain": "vnexpress.net",
+    "display_name": "VnExpress",
+    "extraction_time": "2025-08-22T14:04:44.062724",
+    "total_articles": 0,
+    "success_count": 0,
+    "articles": [],
+    "errors": [
+      {
+        "url": "https://vnexpress.net/roddick-alcaraz-sai-lam-khi-an-ui-sinner-4929954.html",
+        "error": "Failed to extract content"
+      }
+    ],
+    "processing_time": 10.24,
+    "success": true,
+    "type": "domain"
+  },
+  {
+    "domain": "dantri.com.vn",
+    "display_name": "DÃ¢n TrÃ­",
+    "extraction_time": "2025-08-22T14:04:49.288120",
+    "total_articles": 3,
+    "success_count": 3,
+    "articles": [
+      {
+        "url": "https://dantri.com.vn/xa-hoi/bo-chinh-tri-cho-y-kien-ve-phuong-an-nhan-su-cua-ha-noi-tphcm-20250821182414702.htm",
+        "title": "Bộ Chính trị cho ý kiến về phương án nhân sự của Hà Nội, TPHCM",
+        "author": [
+          "Hoài Thu",
+          "Dân Trí",
+          "www.facebook.com"
+        ],
+        "category": "",
+        "content": "Ngày 21/8, tại Trụ sở Trung ương Đảng, Tổng Bí thư Tô Lâm chủ trì cuộc làm việc của Bộ Chính trị với Ban Thường vụ Thành ủy thành phố Hà Nội và Ban Thường vụ Thành ủy TPHCM, để cho ý kiến vào dự thảo văn kiện và đề án nhân sự cấp ủy trình Đại hội đại biểu Đảng bộ thành phố nhiệm kỳ 2025-2030.\n\nPhát biểu khai mạc, Tổng Bí thư Tô Lâm nhấn mạnh vai trò, tầm quan trọng của hai địa phương đối với cả nước, và cuộc làm việc này nhằm mục đích chuẩn bị kỹ lưỡng các văn kiện, nhân sự trình Đại hội bảo đảm đáp ứng được tầm nhìn, định hướng phát triển trong bối cảnh tình hình mới có nhiều thay đổi về không gian phát triển, nguồn lực và động lực.\n\nMục tiêu cao hơn, theo Tổng Bí thư, để Hà Nội và TPHCM phát triển tương xứng với vai trò, vị thế, tiềm năng và thế mạnh của mỗi địa phương cũng như của cả nước.\n\nSau khi nghe đại diện Ban Thường vụ Thành ủy Hà Nội và Ban Thường vụ Thành ủy TPHCM báo cáo dự thảo các văn kiện và phương án nhân sự nhiệm kỳ 2025-2030, báo cáo tiếp thu, giải trình ý kiến đóng góp của các ban, bộ, ngành Trung ương, các Ủy viên Bộ Chính trị đã cho ý kiến tập trung nhấn mạnh giải pháp để giải quyết dứt điểm những hạn chế, khuyết điểm, điểm nghẽn phát triển của hai thành phố.\n\nÝ kiến của các Ủy viên Bộ Chính trị cũng đồng thời gợi mở, bổ sung định hướng về nhiệm vụ, giải pháp, phương thức lãnh đạo, kinh nghiệm, cách làm mới trong lãnh đạo, chỉ đạo của hai thành phố trong nhiệm kỳ 2025-2030 và tầm nhìn đến năm 2045.\n\nKết luận buổi làm việc, Tổng Bí thư Tô Lâm ghi nhận và đánh giá cao những kết quả quan trọng của Đảng bộ thành phố Hà Nội và Đảng bộ thành phố Hồ Chí Minh đạt được trong nhiệm kỳ 2020-2025. Tổng Bí thư đánh giá cao công tác chuẩn bị văn kiện Đại hội đã được hai Đảng bộ triển khai bài bản, khoa học, kỹ lưỡng.\n\nVề phương hướng, nhiệm vụ trong nhiệm kỳ 2025-2030, Tổng Bí thư Tô Lâm đề nghị Đảng bộ thành phố Hà Nội và Đảng bộ TPHCM cần nhận thức sâu sắc vị trí, vai trò đặc biệt quan trọng của mình để nhận thức đầy đủ sự quan tâm, tạo điều kiện của Trung ương về cơ chế, chính sách và nguồn lực vượt trội, để thấy rõ trách nhiệm với cả nước.\n\nTổng Bí thư mong muốn cùng với mục tiêu phát triển nhanh, bền vững, thành phố Hà Nội cần chú trọng phát huy giá trị văn hóa đặc sắc của Thủ đô ngàn năm văn hiến, anh hùng, “Thủ đô của lương tri và phẩm giá con người”; xây dựng người Hà Nội thanh lịch, văn minh, hiện đại, giàu tính nhân văn.\n\nTheo Tổng Bí thư, thành phố Hà Nội phải là trung tâm chính trị, văn hóa tiêu biểu của cả nước, xây dựng hình ảnh Thủ đô xanh - thông minh - đáng sống - có sức hút cả trong và ngoài nước.\n\nĐối với TPHCM, Tổng Bí thư yêu cầu cần xác lập mô hình tăng trưởng mới dựa trên khoa học, công nghệ, đổi mới sáng tạo, chuyển đổi số; phát triển kinh tế tri thức, sáng tạo, có giá trị gia tăng cao để trở thành đô thị văn minh, hiện đại, trung tâm phát triển đổi mới sáng tạo, năng động, hội nhập, đi đầu trong sự nghiệp công nghiệp hóa, hiện đại hóa đất nước, tiếp tục là \"đầu tàu\" kinh tế của cả nước, có vị trí nổi trội ở khu vực Đông Nam Á.\n\nTầm nhìn đến năm 2045, Tổng Bí thư định hướng TPHCM trở thành đô thị ngang tầm các thành phố lớn trên thế giới; trung tâm kinh tế, tài chính, du lịch của châu Á; điểm đến hấp dẫn toàn cầu, nơi kinh tế, văn hóa, xã hội phát triển đặc sắc, bền vững, chất lượng sống cao, hội nhập quốc tế sâu rộng, nằm trong top 100 thành phố toàn cầu phát triển thông minh và bền vững, trở thành Thành phố xã hội chủ nghĩa tiêu biểu của Việt Nam.\n\nTổng Bí thư cũng nhấn mạnh mục tiêu xây dựng Thủ đô Hà Nội và TPHCM trật tự, kỷ cương, an toàn, lành mạnh, là điểm đến an ninh, an toàn của thế giới.\n\nTổng Bí thư Tô Lâm đề nghị Thành ủy Hà Nội và Thành ủy TPHCM tiếp thu ý kiến của các Ủy viên Bộ Chính trị; ý kiến góp ý của các ban, bộ, ngành để hoàn thiện nội dung văn kiện, tổ chức thành công Đại hội Đảng bộ nhiệm kỳ 2025-2030.\n\nĐồng thời, Tổng Bí thư yêu cầu tập trung xây dựng chương trình hành động thực hiện nghị quyết Đại hội với các nhóm nhiệm vụ, giải pháp phù hợp, lộ trình khả thi; bảo đảm thực hiện thành công các mục tiêu, chỉ tiêu của Đại hội, sớm đưa Nghị quyết đi vào cuộc sống; thực hiện tốt Nghị quyết Đại hội Đảng lần thứ XIV, các định hướng, chỉ đạo của Trung ương, Bộ Chính trị, Ban Bí thư trong kỷ nguyên mới.\n\nTổng Bí thư nhấn mạnh hai địa phương cần tận dụng thời cơ, vượt qua thách thức, thực hiện thành công mô hình chính quyền địa phương hai cấp, vì cả nước, cùng cả nước phát triển phồn vinh, thịnh vượng.",
+        "url_image": "https://cdnphoto.dantri.com.vn/ctGvNG9uAewwWct2m8DcXaq-Zl4=/zoom/1200_630/2025/08/21/tong-bi-thu-to-lam-cropped-1755775360761.jpg",
+        "metadata": {
+          "tags": [],
+          "keywords": [],
+          "description": "(Dân trí) - Tổng Bí thư Tô Lâm chủ trì cuộc làm việc của Bộ Chính trị với Ban Thường vụ Thành ủy Hà Nội và TPHCM để cho ý kiến về Văn kiện và phương án nhân"
+        },
+        "publish_date": "2025-08-21T20:00:00+07:00",
+        "url_video": ""
+      },
+      {
+        "url": "https://dantri.com.vn/the-thao/vdv-bong-chuyen-nu-viet-nam-gay-an-tuong-manh-vi-xinh-dep-20250821175334692.htm",
+        "title": "VĐV bóng chuyền nữ Việt Nam gây ấn tượng mạnh vì xinh đẹp",
+        "author": [
+          "H. Long",
+          "Dân Trí",
+          "www.facebook.com"
+        ],
+        "category": "",
+        "content": "Bích Thủy sinh năm 2000 và sở hữu chiều cao tới 1,84m. Vận động viên (VĐV) này không chỉ thi đấu chắc chắn trong vai trò phụ công (có vai trò chính là chắn bóng và tấn công nhanh ở vị trí giữa lưới) mà còn gây ấn tượng bởi ngoại hình xinh đẹp.\n\nMới đây, tờ SMM Volleyball (Thái Lan) đã đăng tải bức hình các VĐV Việt Nam di chuyển tới Thái Lan để tham dự giải thế giới. Trong đó, người hâm mộ xứ Chùa vàng đặc biệt chú ý tới Bích Thủy.\n\nTài khoản có tên Kimimaro Asuki bình luận: “Tôi biết cô gái này. Đó là VĐV xinh đẹp, hiền lành. Một phụ công xuất sắc của bóng chuyền nữ Việt Nam. Năm ngoái, cô ấy từng thi đấu ở Hàn Quốc”.\n\nTài khoản khác có tên Arisa Tonphai viết: “Một vẻ đẹp dễ thương, hiền lành”.\n\nTài khoản Sasiwan Rakdee tiếp lời: “VĐV Việt Nam rất đẹp. Cô ấy chắn bóng tốt và ghi khá nhiều điểm”.\n\nMột người khác cũng khen ngợi: “Tôi thích vẻ đẹp dễ thương như vậy”.\n\nTài khoản Chuwong Thongmak viết: “Tôi sẽ theo dõi Bích Thủy thi đấu ở giải này. Đó là cô gái dễ thương và là tương lai của bóng chuyền nữ Việt Nam”.\n\nNgười tiếp theo bình luận: “Tôi rất thích vẻ đẹp dễ thương kiểu trẻ con thế này”.\n\nBích Thủy là phụ công của CLB Hóa chất Đức Giang. Năm ngoái, nữ VĐV sinh năm 2000 từng sang Hàn Quốc khoác áo CLB GS Caltex Seoul Kixx. Vào tháng 3 năm nay, cô mới về nước để thi đấu sau khi hết hạn cho mượn. Theo thống kê, Bích Thủy là một trong những VĐV có tỷ lệ chắn bóng tốt nhất ở giải vô địch quốc gia Hàn Quốc.\n\nQuãng thời gian thi đấu ở Hàn Quốc giúp Bích Thủy tích lũy thêm nhiều kinh nghiệm. Ở SEA V-League (giải bóng chuyền nữ Đông Nam Á) chặng hai vừa qua, VĐV này đã giành giải Phụ công xuất sắc nhất, góp công giúp đội tuyển bóng chuyền nữ Việt Nam lần đầu đánh bại Thái Lan để giành chức vô địch.",
+        "url_image": "https://cdnphoto.dantri.com.vn/eEwFwvXreDzyjzqlTpHrXw3SskI=/zoom/1200_630/2025/08/21/vdv-bong-chuyen-nu-viet-nam-gay-an-tuong-manh-vi-xinh-dep-cropped-1755773533901.jpg",
+        "metadata": {
+          "tags": [],
+          "keywords": [],
+          "description": "(Dân trí) - Phụ công Trần Thị Bích Thủy trở thành cái tên gây sốt trên mạng xã hội Thái Lan vì ngoại hình xinh đẹp."
+        },
+        "publish_date": "2025-08-21T18:04:00+07:00",
+        "url_video": ""
+      },
+      {
+        "url": "https://dantri.com.vn/xa-hoi/khong-khi-truoc-gio-g-tong-hop-luyen-dieu-binh-o-quang-truong-ba-dinh-20250821175213173.htm",
+        "title": "Không khí rạo rực trước giờ tổng hợp luyện diễu binh ở Quảng trường Ba Đình",
+        "author": [
+          "Mạnh Quân",
+          "Hải Long",
+          "Thành Đông",
+          "Hoàng Việt",
+          "Dân Trí",
+          "www.facebook.com"
+        ],
+        "category": "",
+        "content": "Từ sáng sớm 21/8, hàng nghìn người dân đã đổ về Quảng trường Ba Đình đón xem màn bay tập luyện của Không quân Việt Nam, sau đó nán lại để đón xem buổi tổng diễu binh, diễu hành vào 20h tối nay (Ảnh: Mạnh Quân).\n\nTrên đường Hùng Vương (đoạn từ Quán Thánh rẽ vào), đông kín người dân chờ đón hai bên đường vẫy chào khối xe pháo bánh xích quân đội tiến vào điểm tập kết (Ảnh: Hoàng Việt).\n\nKhối xe bánh xích với xe tăng T90s, T54B, T55 xếp hàng dài di chuyển từ phố Nguyễn Tri Phương qua Cửa Bắc, Quán Thánh và rẽ vào Hùng Vương (Ảnh: Hoàng Việt).\n\nKhối xe pháo cùng khối Nữ chiến sĩ Gìn giữ hoà bình Liên hợp quốc tiến vào điểm tập kết trước Quảng trường Ba Đình trong khí thế hào hùng, sự hò reo đón chào của người dân (Ảnh: Hoàng Việt).\n\nCác nữ chiến sĩ xinh đẹp giao lưu, tạo dáng thả tim cùng người dân hai bên đường (Ảnh: Hoàng Việt).\n\nThượng úy Lê Hoàng Hiệp xuất hiện cùng các đồng đội với lá cờ của đội hình diễu binh Lữ đoàn Tác chiến điện tử trên tay (Ảnh: Hoàng Việt).\n\nNgười dân hò reo, vẫy tay chào đón khi các khối chiến sĩ lần lượt đi qua đường Hùng Vương, đoạn vườn hoa Mai Xuân Thưởng (Ảnh: Hoàng Việt).\n\nCông viên Bách Thảo cũng là điểm tập kết của hàng nghìn chiến sĩ thuộc các khối sẽ diễu binh, diễu hành trong tối nay (Ảnh: Hoàng Việt).\n\nNụ cười của một chiến sĩ Cảnh sát giao thông khi giao lưu cùng các em nhỏ bên trong công viên Bách Thảo (Ảnh: Hoàng Việt).\n\nTrong thời gian dài chờ đợi, các chiến sĩ giao lưu với người dân hai bên đường một cách cởi mở, gần gũi (Ảnh: Hoàng Việt).\n\nCác nữ chiến sĩ khối Nghi lễ quân đội chụp ảnh chung cùng người dân trước Phủ Chủ tịch (Ảnh: Mạnh Quân).\n\nTrên các tuyến đường như Hùng Vương, Nguyễn Thái Học, Trần Phú, Cửa Bắc..., hàng chục nghìn người với cờ Tổ quốc rực rỡ trong tay đã sẵn sàng đón chào các khối diễu binh, diễu hành chính thức hợp luyện, đi qua (Ảnh: Mạnh Quân - Thành Đông).\n\nỞ các góc phố, người dân hát vang các bài hát như Quốc ca, Như có Bác Hồ trong ngày vui đại thắng... (Ảnh: Hải Long).\n\nGóc phố Hùng Vương - Nguyễn Thái Học đã chật kín người dân chờ đón các khối diễu binh, diễu hành đi qua (Ảnh: Thành Đông).\n\nĐúng 20h, buổi tổng hợp luyện lần 1 diễu binh, diễu hành kỷ niệm 80 năm Cách mạng tháng Tám thành công và Quốc khánh 2/9 sẽ diễn ra tại Quảng trường Ba Đình lịch sử (Ảnh: Thành Đông).",
+        "url_image": "https://cdnphoto.dantri.com.vn/P2fTmelswKq2sLIPuV4E7Kg5R0E=/zoom/1200_630/2025/08/21/tong-hop-luyen-dieu-binh-17-cropped-1755773343949.jpg",
+        "metadata": {
+          "tags": [],
+          "keywords": [],
+          "description": "(Dân trí) - Hàng chục nghìn người dân đã đổ về Quảng trường Ba Đình từ sáng 21/8, mở hội reo mừng và vẫy cờ hoa đón chào các khối xe pháo, chiến sĩ sẽ tham"
+        },
+        "publish_date": "2025-08-21T17:53:02+07:00",
+        "url_video": ""
+      }
+    ],
+    "errors": [],
+    "processing_time": 5.22,
+    "success": true,
+    "type": "domain"
+  },
+  {
+    "domain": "tuoitre.vn",
+    "display_name": "Tuá»•i Tráº»",
+    "extraction_time": "2025-08-22T14:04:55.317521",
+    "total_articles": 3,
+    "success_count": 3,
+    "articles": [
+      {
+        "url": "https://tuoitre.vn/thuc-hu-vu-negav-uy-quyen-cong-ty-luat-xu-ly-cac-thong-tin-vu-khong-xuc-pham-20250821181157393.htm",
+        "title": "Thực hư vụ Negav ủy quyền công ty luật xử lý các thông tin 'vu khống, xúc phạm'",
+        "author": [
+          "LÊ GIANG",
+          "TUOI TRE ONLINE"
+        ],
+        "category": "",
+        "content": "Theo thông tin do Công ty luật TNHH PN Legal gửi đến Tuổi Trẻ Online, công ty tự nhận là đại diện theo ủy quyền của ông Đặng Thành An (nghệ danh Negav), Negav đã làm việc với Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ cao về việc bị tung các thông tin \"sai sự thật, xuyên tạc, vu khống...\".\n\nTuy nhiên, phía Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ cao chưa xác nhận thông tin này.\n\nNegav có ủy quyền công ty luật xử lý thông tin xuyên tạc, vu khống?\n\nCông ty luật TNHH PN Legal cho biết trong thời gian gần đây, một số cá nhân và tổ chức liên tục đăng tải hoặc đăng lại những thông tin về ông Đặng Thành An.\n\nTheo phía công ty, các thông tin này \"sai sự thật, chưa được xác minh bởi cơ quan có thẩm quyền, có dấu hiệu của hành vi xuyên tạc, vu khống, tự ý kết luận ông Đặng Thành An vi phạm pháp luật mà không thực hiện theo trình tự pháp luật, vốn đã từng xuất hiện trên không gian mạng từ cuối năm 2024\".\n\nDo đó, bằng văn bản gửi đến báo chí và đăng lên mạng xã hội, PN Legal khẳng định các thông tin nêu trên \"đã gây tổn hại trực tiếp, nghiêm trọng đến quyền, lợi ích hợp pháp của ông Đặng Thành An và các tổ chức, cá nhân liên quan khác\" và có thể bị xử lý theo pháp luật.\n\nTheo PN Legal, để bảo vệ quyền lợi hợp pháp của mình, ông Đặng Thành An đã làm việc với Cục An ninh mạng và phòng chống tội phạm sử dụng công nghệ cao Bộ Công an (A05) về những cáo buộc nêu trên. Văn bản của công ty trích ra một số kết luận được cho là từ Cục A05.\n\nCông ty yêu cầu các tổ chức, cá nhân \"ngay lập tức chấm dứt việc đăng tải thông tin nêu trên, đồng thời tháo gỡ, xóa tất cả những nội dung này\", và cho biết \"đã và đang lập vi bằng, thu thập tài liệu, chứng cứ liên quan\".\n\nTuy nhiên đến tối 21-8, fanpage của Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ cao lên tiếng về sự việc này.\n\nFanpage của cục viết: \"Liên quan đến một văn bản lan truyền trên không gian mạng đề cập đến ông Đặng Thành An (Negav), Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ cao đang mời làm việc với Công ty luật TNHH PN Legal và cá nhân liên quan để xác minh, làm rõ những nội dung đề cập trong văn bản\".",
+        "url_image": "https://cdn2.tuoitre.vn/thumb_w/1200/471584752817336320/2025/8/21/negav-17557746468441948511379-84-0-865-1492-crop-17557747008051187248803.jpg",
+        "metadata": {
+          "tags": [],
+          "keywords": [],
+          "description": "Văn bản từ một công ty luật được chia sẻ rộng rãi trên mạng xã hội, về việc rapper Negav (Đặng Thành An) ủy quyền xử lý thông tin 'sai sự thật, xuyên tạc, vu khống'."
+        },
+        "publish_date": "2025-08-21T19:26:00+07:00",
+        "url_video": ""
+      },
+      {
+        "url": "https://tuoitre.vn/ukraine-tan-cong-gay-te-liet-duong-ong-dan-dau-druzhba-cua-nga-20250822202911592.htm",
+        "title": "Ukraine tấn công gây tê liệt đường ống dẫn dầu Druzhba của Nga",
+        "author": [
+          "THANH BÌNH",
+          "TUOI TRE ONLINE"
+        ],
+        "category": "",
+        "content": "Theo Hãng tin Reuters, cuộc tấn công của Ukraine vào đêm 21-8 đánh dấu lần thứ hai trong tuần này nguồn cung dầu Nga tới Hungary và Slovakia bị cắt, sau khi đã bị gián đoạn hồi đầu tuần.\n\nQuân đội Ukraine cho biết họ đã tấn công một lần nữa vào trạm bơm dầu Unecha (tỉnh Bryansk, Nga) - một phần quan trọng trong đường ống dẫn dầu Druzhba của Nga chảy sang châu Âu.\n\nMột nguồn tin trong ngành của Nga cũng cho biết nguồn cung dầu có thể bị ngưng trong vài ngày. Bộ Năng lượng Nga chưa phản hồi khi được đề nghị bình luận về vụ việc.\n\nLiên minh châu Âu đã cắt giảm nguồn cung năng lượng từ Nga sau khi xung đột Nga - Ukraine nổ ra vào tháng 2-2022. Khối này đang tìm cách loại bỏ hoàn toàn dầu khí Nga trước cuối năm 2027.\n\nTuy nhiên, các nước thành viên EU là Slovakia và Hungary phản đối việc loại bỏ này, cho rằng nền kinh tế của họ phụ thuộc vào nguồn cung dầu từ Nga.\n\nHai quốc gia này cũng phản đối các lệnh trừng phạt chống lại Nga, trong khi Ukraine cho rằng các lệnh trừng phạt này cần thiết để gây sức ép buộc Nga đi tới hòa bình.\n\nNgày 22-8, Chính phủ Hungary và Slovakia đã gửi thư tới Ủy ban châu Âu, nêu rằng cuộc tấn công của Ukraine có thể khiến họ không nhập khẩu được dầu mỏ Nga trong ít nhất 5 ngày, đồng thời kêu gọi đảm bảo an ninh nguồn cung.\n\n\"Nếu không có đường ống này, việc cung cấp an toàn cho hai nước chúng tôi đơn giản là không thể\" - Ngoại trưởng Hungary Peter Szijjarto và Ngoại trưởng Slovakia Juraj Blanar nhấn mạnh trong thư.\n\nTrong vài tuần qua, Nga và Ukraine đã gia tăng tấn công vào cơ sở hạ tầng năng lượng của nhau, bất chấp nỗ lực của Tổng thống Mỹ Donald Trump trong việc thúc đẩy tổ chức hội nghị thượng đỉnh Nga - Ukraine để chấm dứt chiến tranh.\n\nNga liên tục tấn công cơ sở hạ tầng khí đốt của Ukraine, gây ảnh hưởng đến công tác chuẩn bị cho việc sưởi ấm trong mùa đông và nguồn nhiên liệu cho các ngành công nghiệp quan trọng.\n\nTrong khi đó, các cuộc tấn công của Ukraine đã làm hư hại các nhà máy lọc dầu của Nga, nhằm làm gián đoạn hoạt động xuất khẩu năng lượng và tạo ra tình trạng thiếu hụt nhiên liệu ở nhiều vùng của Nga.",
+        "url_image": "https://cdn2.tuoitre.vn/thumb_w/1200/471584752817336320/2025/8/22/2025-08-18t101241z1331160982rc2s9u9q4o9prtrmadp3hungary-oil-russia-1755869169956728294456-193-0-1533-2560-crop-1755869293144989768771.jpg",
+        "metadata": {
+          "tags": [],
+          "keywords": [],
+          "description": "Ngày 22-8, Chính phủ Hungary và Slovakia cho biết nguồn cung dầu của Nga tới hai nước này có thể bị tạm ngừng trong ít nhất 5 ngày sau cuộc tấn công mới nhất của Ukraine nhằm vào một cơ sở năng lượng ở Nga."
+        },
+        "publish_date": "2025-08-22T20:48:00+07:00",
+        "url_video": ""
+      },
+      {
+        "url": "https://tuoitre.vn/so-ket-diem-chuan-2025-su-pham-quan-doi-tiep-tuc-nong-co-nganh-lay-30-30-diem-20250820103055488.htm",
+        "title": "'Sơ kết' điểm chuẩn 2025: Sư phạm, quân đội tiếp tục 'nóng', có ngành lấy 30/30 điểm",
+        "author": [
+          "NGUYÊN B&#7842;O",
+          "TUOI TRE ONLINE"
+        ],
+        "category": "",
+        "content": "Chiều 22-8, Ban tuyển sinh quân sự (Bộ Quốc phòng) công bố điểm chuẩn vào các trường khối quân sự.\n\nTrong đó thí sinh nữ miền Bắc xét tuyển vào Học viện Quân y và thí sinh nữ xét vào ngành quan hệ quốc tế của Học viện Khoa học Quân sự phải đạt điểm tuyệt đối 30/30 mới trúng tuyển.\n\nKế tiếp tại Học viện Kỹ thuật Quân sự, thí sinh nữ miền Nam phải đạt 29,25, thí sinh nữ miền Bắc phải đạt 28,83 điểm mới trúng tuyển; thí sinh miền Nam thi Học viện Quân y phải đạt 29,03 điểm...\n\nNăm ngoái, điểm chuẩn trúng tuyển vào các trường quân đội dao động 20,6 - 28,55 điểm, trong đó thí sinh xét tuyển vào Trường Sĩ quan Chính trị bằng tổ hợp C00 (văn, sử, địa) phải đạt 28,55, đồng thời có điểm thi môn ngữ văn từ 9,5 trở lên mới trúng tuyển.\n\nTại một số trường sư phạm điểm chuẩn cũng cao chót vót, trong đó thí sinh xét tuyển vào ngành sư phạm tiếng Anh và sư phạm tiếng Trung Quốc của Trường đại học Ngoại ngữ - Đại học Huế phải đạt điểm tuyệt đối 30/30, đồng thời phải kèm theo các tiêu chí phụ đáp ứng mới trúng tuyển.\n\nTương tự, hai ngành sư phạm tiếng Anh và sư phạm tiếng Trung của Trường đại học Ngoại ngữ - Đại học Quốc gia Hà Nội cùng lấy điểm chuẩn 30/30 và thí sinh phải đặt nguyện vọng 1 mới trúng tuyển.\n\nTại Trường đại học Giáo dục - Đại học Quốc gia Hà Nội, điểm chuẩn ngành sư phạm lịch sử - địa lý lên tới 29,84 điểm, trong khi chỉ tiêu tuyển sinh là 70 sinh viên.\n\nTiếp đến là sư phạm lịch sử 28,99, giáo dục tiểu học 28,60, sư phạm toán 28,57, sư phạm ngữ văn 28,45...\n\nTrường đại học Sư phạm, Đại học Thái Nguyên có 4 ngành sư phạm cùng lấy điểm chuẩn từ 27,80 trở lên, tương đương hơn 9,2 điểm/môn. Trong đó sư phạm lịch sử 27,94; sư phạm ngữ văn 27,92; sư phạm địa lý 27,80; sư phạm lịch sử - địa lý 27,78 điểm...",
+        "url_image": "https://cdn2.tuoitre.vn/thumb_w/1200/471584752817336320/2025/8/20/z64654665831871ccd48145ef432b9b43fbece54dcbdc3-1755660476664291345267-59-0-1399-2560-crop-17556605069631512857428.jpg",
+        "metadata": {
+          "tags": [],
+          "keywords": [],
+          "description": "Năm nay các ngành thuộc khối quân đội và sư phạm tiếp tục ghi nhận điểm chuẩn cao kỷ lục, có ngành lấy điểm tuyệt đối 30/30 và phải đặt nguyện vọng 1 mới trúng tuyển."
+        },
+        "publish_date": "2025-08-22T20:20:00+07:00",
+        "url_video": ""
+      }
+    ],
+    "errors": [],
+    "processing_time": 6.03,
+    "success": true,
+    "type": "domain"
+  }
+]

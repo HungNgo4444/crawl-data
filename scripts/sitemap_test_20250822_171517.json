@@ -1,0 +1,166 @@
+{
+  "test_info": {
+    "timestamp": "2025-08-22T17:15:17.880592",
+    "total_domains_tested": 3,
+    "successful_domains": 3,
+    "failed_domains": 0,
+    "total_urls_found": 10,
+    "total_images_found": 0,
+    "image_extraction_rate": "0.0%"
+  },
+  "results": [
+    {
+      "domain_info": {
+        "domain": "vov.vn",
+        "base_url": "https://vov.vn",
+        "sitemaps": [
+          "https://vov.vn/maps/sitemap.xml",
+          "https://vov.vn/sitemap.xml",
+          "https://vov.vn/sitemaps/posts.xml",
+          "https://vov.vn/content/sitemap.xml",
+          "https://vov.vn/feed/sitemap.xml",
+          "https://vov.vn/sitemap-news.xml",
+          "https://vov.vn/sitemaps/newsindex.xml",
+          "https://vov.vn/sitemaps/news.xml",
+          "https://vov.vn/sitemap.html",
+          "https://vov.vn/sitemap-content.xml",
+          "https://vov.vn/sitemap-pages.xml",
+          "https://vov.vn/maps/site-map.xml",
+          "https://vov.vn/sitemap.htm",
+          "https://vov.vn/pages/sitemap.xml",
+          "https://vov.vn/rss/sitemap.xml"
+        ],
+        "max_urls": 10
+      },
+      "success": true,
+      "total_sitemaps_processed": 15,
+      "total_urls_found": 29204,
+      "execution_time": 6.776358127593994,
+      "urls": [
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-07/anh_bia_5.jpg",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2023-10/co_phieu.png",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-07/360_F_648724421_9v8SJ9QUJ2sMnZNbFTeGSaEz46nybkTa.jpg",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-07/bat_coc.jpg",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-07/gia-vang-hom-nay-1156-1622519203.jpg",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-07/hoi_nghi_trung_uong_12.jpg",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-07/f464af45692293e841c2e6fbabd3800f.png",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-08/mexico.jpg",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-07/1450363.jpg",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        },
+        {
+          "url": "https://media.vov.vn/sites/default/files/styles/og_image/public/2025-07/luyen%20bay%205.jpg",
+          "lastmod": null,
+          "changefreq": null,
+          "priority": 0.8,
+          "url_image": null
+        }
+      ]
+    },
+    {
+      "domain_info": {
+        "domain": "laodong.vn",
+        "base_url": "https://laodong.vn",
+        "sitemaps": [
+          "https://laodong.vn/site-map.xml",
+          "https://laodong.vn/sitemaps.xml",
+          "https://laodong.vn/post-sitemap.xml",
+          "https://laodong.vn/content/sitemap.xml",
+          "https://laodong.vn/wp-sitemap.xml",
+          "https://laodong.vn/rss/sitemap.xml",
+          "https://laodong.vn/sitemap.xml",
+          "https://laodong.vn/sitemap_index.xml",
+          "https://laodong.vn/maps/sitemap.xml",
+          "https://laodong.vn/sitemap-pages.xml",
+          "https://laodong.vn/sitemap/sitemap.xml",
+          "https://laodong.vn/sitemap-news.xml",
+          "https://laodong.vn/sitemaps/sitemap.xml",
+          "https://laodong.vn/pages/sitemap.xml",
+          "https://laodong.vn/feed/sitemap.xml"
+        ],
+        "max_urls": 10
+      },
+      "success": true,
+      "total_sitemaps_processed": 15,
+      "total_urls_found": 0,
+      "execution_time": 0.15378069877624512,
+      "urls": []
+    },
+    {
+      "domain_info": {
+        "domain": "sggp.org.vn",
+        "base_url": "https://sggp.org.vn",
+        "sitemaps": [
+          "https://www.sggp.org.vn/sitemaps/index.xml",
+          "https://www.sggp.org.vn/sitemaps.xml",
+          "https://www.sggp.org.vn/sitemaps/posts.xml",
+          "https://www.sggp.org.vn/sitemap.xml",
+          "https://www.sggp.org.vn/sitemaps/sitemap.xml",
+          "https://www.sggp.org.vn/sitemaps/main.xml",
+          "https://www.sggp.org.vn/sitemaps/articles.xml",
+          "https://www.sggp.org.vn/sitemaps/google-news.xml",
+          "https://www.sggp.org.vn/sitemaps/newsindex.xml",
+          "https://www.sggp.org.vn/sitemaps/news.xml"
+        ],
+        "max_urls": 10
+      },
+      "success": true,
+      "total_sitemaps_processed": 10,
+      "total_urls_found": 0,
+      "execution_time": 6.220986366271973,
+      "urls": []
+    }
+  ]
+}

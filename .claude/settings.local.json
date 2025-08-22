@@ -137,7 +137,12 @@
       "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"SELECT name, url_example, (CASE WHEN generated_schema != ''{}'' THEN ''HAS SCHEMA'' ELSE ''NO SCHEMA'' END) as schema_status FROM domains WHERE url_example IS NOT NULL ORDER BY name;\")",
       "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"SELECT name, url_example, (CASE WHEN generated_schema <> ''{}'' THEN ''HAS SCHEMA'' ELSE ''NO SCHEMA'' END) as schema_status FROM domains WHERE url_example IS NOT NULL ORDER BY name;\")",
       "Bash(set PYTHONLEGACYWINDOWSSTDIO=1)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"SELECT name, jsonb_array_length(sitemaps) as sitemap_count, sitemaps FROM domains WHERE jsonb_array_length(sitemaps) > 0 ORDER BY sitemap_count DESC LIMIT 5;\")",
+      "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"SELECT name, base_url, sitemaps FROM domains WHERE jsonb_array_length(sitemaps) > 0 ORDER BY jsonb_array_length(sitemaps) DESC LIMIT 3;\" -t)",
+      "WebSearch",
+      "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -h localhost -U crawler_user -d crawler_db -c \"SELECT COUNT(*) FROM domains;\")",
+      "Bash(PGPASSWORD=crawler123 docker exec -e PGPASSWORD=crawler123 crawler_postgres psql -U crawler_user -d crawler_db -c \"SELECT current_user, current_database();\")"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",

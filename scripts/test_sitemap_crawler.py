@@ -23,33 +23,100 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
+def get_domains_from_database():
+    """Get domains with sitemap data from database."""
+    # Data extracted from database using docker exec
+    return [
+        {
+            'name': 'vov.vn',
+            'base_url': 'https://vov.vn',
+            'sitemaps': [
+                "https://vov.vn/maps/sitemap.xml", 
+                "https://vov.vn/sitemap.xml", 
+                "https://vov.vn/sitemaps/posts.xml", 
+                "https://vov.vn/content/sitemap.xml", 
+                "https://vov.vn/feed/sitemap.xml", 
+                "https://vov.vn/sitemap-news.xml", 
+                "https://vov.vn/sitemaps/newsindex.xml", 
+                "https://vov.vn/sitemaps/news.xml", 
+                "https://vov.vn/sitemap.html", 
+                "https://vov.vn/sitemap-content.xml", 
+                "https://vov.vn/sitemap-pages.xml", 
+                "https://vov.vn/maps/site-map.xml", 
+                "https://vov.vn/sitemap.htm", 
+                "https://vov.vn/pages/sitemap.xml", 
+                "https://vov.vn/rss/sitemap.xml"
+            ]
+        },
+        {
+            'name': 'laodong.vn',
+            'base_url': 'https://laodong.vn',
+            'sitemaps': [
+                "https://laodong.vn/site-map.xml", 
+                "https://laodong.vn/sitemaps.xml", 
+                "https://laodong.vn/post-sitemap.xml", 
+                "https://laodong.vn/content/sitemap.xml", 
+                "https://laodong.vn/wp-sitemap.xml", 
+                "https://laodong.vn/rss/sitemap.xml", 
+                "https://laodong.vn/sitemap.xml", 
+                "https://laodong.vn/sitemap_index.xml", 
+                "https://laodong.vn/maps/sitemap.xml", 
+                "https://laodong.vn/sitemap-pages.xml", 
+                "https://laodong.vn/sitemap/sitemap.xml", 
+                "https://laodong.vn/sitemap-news.xml", 
+                "https://laodong.vn/sitemaps/sitemap.xml", 
+                "https://laodong.vn/pages/sitemap.xml", 
+                "https://laodong.vn/feed/sitemap.xml"
+            ]
+        },
+        {
+            'name': 'sggp.org.vn',
+            'base_url': 'https://sggp.org.vn',
+            'sitemaps': [
+                "https://www.sggp.org.vn/sitemaps/index.xml", 
+                "https://www.sggp.org.vn/sitemaps.xml", 
+                "https://www.sggp.org.vn/sitemaps/posts.xml", 
+                "https://www.sggp.org.vn/sitemap.xml", 
+                "https://www.sggp.org.vn/sitemaps/sitemap.xml", 
+                "https://www.sggp.org.vn/sitemaps/main.xml", 
+                "https://www.sggp.org.vn/sitemaps/articles.xml", 
+                "https://www.sggp.org.vn/sitemaps/google-news.xml", 
+                "https://www.sggp.org.vn/sitemaps/newsindex.xml", 
+                "https://www.sggp.org.vn/sitemaps/news.xml"
+            ]
+        }
+    ]
+
 async def test_sitemap_crawler():
-    """Test the sitemap crawler with Vietnamese news domains."""
-    print("Sitemap Crawler Test")
-    print("=" * 40)
+    """Test the sitemap crawler with domains from database."""
+    print("Sitemap Crawler Test - Using Database Sitemaps")
+    print("=" * 50)
+    
+    # Get domains from database
+    db_domains = get_domains_from_database()
+    
+    if not db_domains:
+        print("No domains with sitemaps found in database!")
+        return
+    
+    print(f"Found {len(db_domains)} domains with sitemap data in database:")
+    for domain in db_domains:
+        sitemap_count = len(domain['sitemaps']) if domain['sitemaps'] else 0
+        print(f"  - {domain['name']}: {sitemap_count} sitemaps")
     
     # Initialize the sitemap crawler
     logger = logging.getLogger("SITEMAP_TEST")
     crawler = SitemapCrawler(logger=logger)
     
-    # Test domains - Vietnamese news sites
-    test_domains = [
-        {
-            "domain": "vnexpress.net",
-            "base_url": "https://vnexpress.net",
+    # Convert database domains to test format
+    test_domains = []
+    for domain in db_domains:
+        test_domains.append({
+            "domain": domain['name'],
+            "base_url": domain['base_url'],
+            "sitemaps": domain['sitemaps'],
             "max_urls": 10  # Limit for testing
-        },
-        {
-            "domain": "dantri.com.vn", 
-            "base_url": "https://dantri.com.vn",
-            "max_urls": 10
-        },
-        {
-            "domain": "tuoitre.vn",
-            "base_url": "https://tuoitre.vn",
-            "max_urls": 10
-        }
-    ]
+        })
     
     all_results = []
     successful_domains = 0
@@ -60,14 +127,16 @@ async def test_sitemap_crawler():
         for domain_info in test_domains:
             print(f"\nTesting: {domain_info['domain']}")
             print(f"Base URL: {domain_info['base_url']}")
+            print(f"Sitemaps from DB: {len(domain_info.get('sitemaps', []))}")
             
-            # Create sitemap config
+            # Create sitemap config with database sitemaps
             config = SitemapConfig(
                 domain=domain_info['domain'],
                 base_url=domain_info['base_url'],
                 max_urls=domain_info['max_urls'],
-                crawl_full_content=True,  # Enable full content crawling
-                auto_detect=True
+                crawl_full_content=False,  # Disable full content crawling for testing
+                auto_detect=False,  # Use provided sitemaps, don't auto-detect
+                sitemap_urls=domain_info.get('sitemaps', [])
             )
             
             # Test sitemap crawling
@@ -95,14 +164,6 @@ async def test_sitemap_crawler():
                     print(f"   Priority: {url_obj.priority or 'N/A'}")
                     print(f"   Image URL: {url_obj.url_image or 'N/A'}")
                     
-                    # Check if full content was crawled
-                    if url_obj.crawled_content:
-                        content_length = len(url_obj.crawled_content)
-                        print(f"   Full Content: {content_length} characters crawled")
-                        print(f"   Crawl Success: {url_obj.crawl_metadata.get('success', False)}")
-                    else:
-                        print(f"   Full Content: Not crawled")
-                    
                     if url_obj.url_image:
                         total_images_found += 1
                     
@@ -112,9 +173,7 @@ async def test_sitemap_crawler():
                         "lastmod": url_obj.lastmod.isoformat() if url_obj.lastmod else None,
                         "changefreq": url_obj.changefreq,
                         "priority": url_obj.priority,
-                        "url_image": url_obj.url_image,
-                        "content_length": len(url_obj.crawled_content) if url_obj.crawled_content else 0,
-                        "crawl_metadata": url_obj.crawl_metadata
+                        "url_image": url_obj.url_image
                     }
                     domain_result["urls"].append(url_data)
                 

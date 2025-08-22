@@ -107,7 +107,19 @@ async def extract_domain_get(
 async def test_domain(domain_name: str):
     """Test extraction for a domain with minimal articles"""
     try:
+        processor = get_processor()
         result = processor.process_domain(domain_name, max_articles=2)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/extract-url", response_class=JSONResponse)
+async def extract_single_url(url: str):
+    """Extract article from single URL"""
+    try:
+        processor = get_processor()
+        result = processor.extract_single_url(url)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

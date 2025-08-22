@@ -306,13 +306,17 @@ class SitemapCrawler:
             # Handle compressed sitemaps
             content = response.content
             if sitemap_url.endswith('.gz') or response.headers.get('content-encoding') == 'gzip':
-                content = gzip.decompress(content)
+                try:
+                    content = gzip.decompress(content)
+                except gzip.BadGzipFile:
+                    # Not actually gzipped, use as-is
+                    content = response.content
             
             # Parse XML
             root = ET.fromstring(content)
             
             # Determine sitemap type and process accordingly
-            if 'sitemapindex' in root.tag:
+            if 'sitemapindex' in root.tag or root.find('.//sitemap') is not None:
                 urls = await self._process_sitemap_index(root, sitemap_url, config)
             else:
                 urls = await self._process_regular_sitemap(root, sitemap_url, config)
@@ -358,11 +362,41 @@ class SitemapCrawler:
         
         self.logger.info(f"Sitemap index {sitemap_url} contains {len(sub_sitemaps)} sub-sitemaps")
         
+        # Filter for news/article sitemaps only
+        news_keywords = ['news', 'article', 'post', 'bai-viet', 'tin-tuc', '2025', '2024']
+        image_keywords = ['image', 'media', 'files', 'styles', 'og_image']
+        category_keywords = ['categories', 'topics', 'main', 'pages', 'home']
+        
+        filtered_sitemaps = []
+        for sitemap in sub_sitemaps:
+            sitemap_path = sitemap['url'].lower()
+            
+            # Skip image sitemaps
+            if any(keyword in sitemap_path for keyword in image_keywords):
+                self.logger.debug(f"Skipping image sitemap: {sitemap['url']}")
+                continue
+            
+            # Skip category/page sitemaps unless they contain news keywords
+            if any(keyword in sitemap_path for keyword in category_keywords):
+                if not any(keyword in sitemap_path for keyword in news_keywords):
+                    self.logger.debug(f"Skipping category sitemap: {sitemap['url']}")
+                    continue
+            
+            # Prefer news/article sitemaps
+            if any(keyword in sitemap_path for keyword in news_keywords):
+                filtered_sitemaps.append(sitemap)
+        
+        # If no news sitemaps found, use first few general sitemaps
+        if not filtered_sitemaps:
+            filtered_sitemaps = sub_sitemaps[:3]
+            
+        self.logger.info(f"Using {len(filtered_sitemaps)} filtered sub-sitemaps for processing")
+        
         # Process sub-sitemaps recursively (but limit depth to prevent infinite recursion)
         all_urls = []
-        limit = min(len(sub_sitemaps), config.max_concurrent_sitemaps)
+        limit = min(len(filtered_sitemaps), config.max_concurrent_sitemaps)
         
-        for sub_sitemap in sub_sitemaps[:limit]:
+        for sub_sitemap in filtered_sitemaps[:limit]:
             try:
                 sub_urls = await self._process_single_sitemap(sub_sitemap['url'], config)
                 all_urls.extend(sub_urls)
@@ -391,6 +425,18 @@ class SitemapCrawler:
             tag = elem.tag.split('}')[-1] if '}' in elem.tag else elem.tag
             
             if tag == 'url':
+                # Save previous URL if exists
+                if current_url and current_url.get('url'):
+                    sitemap_url_obj = SitemapURL(
+                        url=current_url['url'],
+                        lastmod=current_url.get('lastmod'),
+                        changefreq=current_url.get('changefreq'),
+                        priority=current_url.get('priority'),
+                        url_image=current_url.get('url_image')
+                    )
+                    urls.append(sitemap_url_obj)
+                
+                # Start new URL
                 current_url = {}
             elif tag == 'loc' and current_url is not None:
                 current_url['url'] = elem.text
@@ -403,18 +449,19 @@ class SitemapCrawler:
                     current_url['priority'] = float(elem.text)
                 except (ValueError, TypeError):
                     current_url['priority'] = None
-                
-                # URL entry is complete
-                if current_url.get('url'):
-                    sitemap_url_obj = SitemapURL(
-                        url=current_url['url'],
-                        lastmod=current_url.get('lastmod'),
-                        changefreq=current_url.get('changefreq'),
-                        priority=current_url.get('priority')
-                    )
-                    urls.append(sitemap_url_obj)
-                
-                current_url = None
+            elif tag == 'image:loc' and current_url is not None:
+                current_url['url_image'] = elem.text
+        
+        # Process any remaining URL after loop
+        if current_url and current_url.get('url'):
+            sitemap_url_obj = SitemapURL(
+                url=current_url['url'],
+                lastmod=current_url.get('lastmod'),
+                changefreq=current_url.get('changefreq'),
+                priority=current_url.get('priority'),
+                url_image=current_url.get('url_image')
+            )
+            urls.append(sitemap_url_obj)
         
         return urls
     
@@ -469,7 +516,6 @@ class SitemapCrawler:
         # Initialize crawler if needed
         if self.crawler is None:
             self.crawler = AsyncWebCrawler(verbose=False)
-            await self.crawler.awarmup()
         
         self.logger.info(f"Starting full content crawl for {len(urls)} URLs")
         
@@ -586,5 +632,5 @@ class SitemapCrawler:
         """Clean up resources."""
         await self.client.aclose()
         if self.crawler:
-            await self.crawler.aclose()
+            await self.crawler.close()
         print("Sitemap crawler closed")
