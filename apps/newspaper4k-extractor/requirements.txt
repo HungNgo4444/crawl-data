@@ -1,0 +1,32 @@
+# Core dependencies
+newspaper4k==0.9.3
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+httpx==0.25.2
+beautifulsoup4==4.12.2
+feedparser==6.0.10
+python-dateutil==2.8.2
+
+# Database
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+
+# Vietnamese text processing
+underthesea==6.7.0
+py_vncorenlp==0.1.0
+
+# Additional utilities
+requests==2.31.0
+lxml[html_clean]==4.9.3
+lxml_html_clean
+pillow==10.1.0
+chardet==5.2.0
+langdetect==1.0.9
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+black==23.11.0
+flake8==6.1.0
