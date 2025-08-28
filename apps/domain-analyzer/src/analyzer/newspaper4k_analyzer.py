@@ -67,24 +67,24 @@ class Newspaper4kDomainAnalyzer:
                 logger.warning(f"No doc parsed for {domain_url}")
                 analysis_result['category_urls'] = []
             
-            # Extract RSS feeds using newspaper4k built-in flow
-            # Must call set_categories and set_feeds to populate feeds properly
+            # Extract RSS feeds - manual implementation để tránh lỗi xpath trong set_feeds()
             if source.doc is not None:
-                # Set categories first (needed for feed discovery)
-                source.set_categories()
-                # Set feeds (discovers feeds from categories and common locations)
-                source.set_feeds() 
-                # Get feed URLs
-                analysis_result['rss_feeds'] = source.feed_urls()
+                analysis_result['rss_feeds'] = self._extract_rss_feeds_manual(source)
             else:
                 analysis_result['rss_feeds'] = []
             
-            # Dynamic CSS selectors extraction from the actual page
+            # Dynamic CSS selectors extraction from the actual page - real data từ website
             try:
                 analysis_result['css_selectors'] = self._extract_css_selectors(source)
             except Exception as e:
                 logger.warning(f"CSS selector extraction failed: {e}")
-                analysis_result['css_selectors'] = {}
+                # Fallback to basic selectors nếu có lỗi
+                analysis_result['css_selectors'] = {
+                    'article_title': ['h1', 'h2'],
+                    'article_content': ['article', '.content'],
+                    'article_meta': ['.meta', '.byline'],
+                    'navigation': ['nav', '.navigation']
+                }
             
             # Extract sitemaps from robots.txt (newspaper4k doesn't have built-in)
             analysis_result['sitemaps'] = self._get_sitemaps_from_robots(domain_url)
@@ -228,6 +228,107 @@ class Newspaper4kDomainAnalyzer:
         
         return sitemaps
     
+    def _extract_rss_feeds_manual(self, source) -> List[str]:
+        """Manual RSS feed extraction để tránh lỗi xpath trong newspaper4k"""
+        feeds = []
+        
+        try:
+            # Common RSS feed patterns
+            common_feed_paths = ["/feed", "/feeds", "/rss", "/rss.xml", "/feed.xml", "/atom.xml"]
+            
+            for path in common_feed_paths:
+                feed_url = urljoin(source.url, path)
+                try:
+                    response = requests.get(feed_url, timeout=10, headers={'User-Agent': 'DomainAnalyzer/1.0'})
+                    if response.status_code == 200 and ('xml' in response.headers.get('content-type', '').lower() or 
+                                                       'rss' in response.text[:200].lower() or
+                                                       'atom' in response.text[:200].lower()):
+                        feeds.append(feed_url)
+                except:
+                    continue
+            
+            # Look for RSS links in HTML
+            if hasattr(source, 'doc') and source.doc is not None:
+                try:
+                    # Find RSS/feed links in HTML
+                    rss_links = source.doc.cssselect('link[type="application/rss+xml"]')
+                    for link in rss_links:
+                        href = link.get('href')
+                        if href:
+                            full_url = urljoin(source.url, href)
+                            if full_url not in feeds:
+                                feeds.append(full_url)
+                    
+                    # Find atom links
+                    atom_links = source.doc.cssselect('link[type="application/atom+xml"]')
+                    for link in atom_links:
+                        href = link.get('href')
+                        if href:
+                            full_url = urljoin(source.url, href)
+                            if full_url not in feeds:
+                                feeds.append(full_url)
+                                
+                    # Find feed URLs in href attributes
+                    feed_hrefs = source.doc.cssselect('a[href*="rss"], a[href*="feed"], a[href*="atom"]')
+                    for link in feed_hrefs:
+                        href = link.get('href')
+                        if href and ('rss' in href.lower() or 'feed' in href.lower() or 'atom' in href.lower()):
+                            full_url = urljoin(source.url, href)
+                            if full_url not in feeds:
+                                feeds.append(full_url)
+                                
+                except Exception as e:
+                    logger.warning(f"Error extracting RSS from HTML: {e}")
+            
+            # Discovery RSS feeds từ HTML page /rss (nhiều sites có RSS directory)
+            rss_index_url = urljoin(source.url, '/rss')
+            try:
+                response = requests.get(rss_index_url, timeout=15, headers={'User-Agent': 'DomainAnalyzer/1.0'})
+                if response.status_code == 200:
+                    from lxml import html
+                    doc = html.fromstring(response.content)
+                    
+                    # Find RSS links trong RSS index page
+                    rss_link_selectors = [
+                        'a[href*=".rss"]',           # Direct .rss files
+                        'a[href*="/rss/"]',          # RSS directory paths  
+                        'a[href*="feed"]',           # Feed links
+                        'a[href*="xml"]'             # XML feeds
+                    ]
+                    
+                    for selector in rss_link_selectors:
+                        links = doc.cssselect(selector)
+                        for link in links:
+                            href = link.get('href')
+                            if href:
+                                full_url = urljoin(source.url, href)
+                                # Validate đây có phải RSS feed thật không
+                                if self._is_valid_rss_url(full_url) and full_url not in feeds:
+                                    feeds.append(full_url)
+                                    
+            except Exception as e:
+                logger.warning(f"Error parsing RSS index page: {e}")
+            
+        except Exception as e:
+            logger.warning(f"Error in manual RSS extraction: {e}")
+        
+        return feeds
+    
+    def _is_valid_rss_url(self, url: str) -> bool:
+        """Validate URL có phải RSS feed thật không"""
+        try:
+            # Quick validation based on URL pattern
+            url_lower = url.lower()
+            if any(pattern in url_lower for pattern in ['.rss', '/rss/', 'feed', '.xml']):
+                # Test actual RSS content
+                response = requests.get(url, timeout=10, headers={'User-Agent': 'DomainAnalyzer/1.0'})
+                if response.status_code == 200:
+                    content_start = response.text[:200].lower()
+                    return ('<?xml' in content_start or 'rss' in content_start or 'feed' in content_start)
+        except:
+            pass
+        return False
+    
     def _extract_css_selectors(self, source) -> Dict[str, List[str]]:
         """Extract dynamic CSS selectors from the actual webpage"""
         selectors = {
@@ -299,30 +400,271 @@ class Newspaper4kDomainAnalyzer:
         return list(urls)
     
     def _extract_urls_from_categories(self, category_urls: List[str]) -> List[str]:
-        """Extract article URLs from category pages"""
-        urls = set()
+        """Extract article URLs from category pages with cycle-safe deep crawling"""
+        all_urls = set()
+        visited_urls = set()  # Track visited URLs to prevent infinite loops
         
-        for category_url in category_urls:
+        for category_url in category_urls[:10]:  # Limit to 10 categories to avoid timeout
             try:
-                response = requests.get(category_url, timeout=15, headers={'User-Agent': 'DomainAnalyzer/1.0'})
-                if response.status_code == 200:
-                    from lxml import html
-                    doc = html.fromstring(response.content)
-                    
-                    # Find all links in the category page
-                    links = doc.cssselect('a[href]')
-                    for link in links:
-                        href = link.get('href')
-                        if href:
-                            full_url = urljoin(category_url, href)
-                            if self._is_article_url(full_url):
-                                urls.add(full_url)
-                                
+                logger.info(f"Processing category: {category_url}")
+                
+                # Deep crawl with cycle detection and depth tracking
+                deep_urls = self._deep_crawl_with_cycle_detection(
+                    start_url=category_url,
+                    max_depth=1,
+                    visited_urls=visited_urls.copy(),  # Fresh visited set for each category
+                    current_depth=0
+                )
+                
+                all_urls.update(deep_urls)
+                logger.info(f"Deep crawl completed for {category_url}: found {len(deep_urls)} URLs")
+                
             except Exception as e:
-                logger.warning(f"Error parsing category {category_url}: {e}")
+                logger.warning(f"Error in deep crawling category {category_url}: {e}")
                 continue
         
-        return list(urls)
+        # Remove duplicates and return
+        final_urls = self._clean_and_deduplicate_urls(list(all_urls))
+        logger.info(f"Deep crawling completed: {len(final_urls)} unique URLs after deduplication")
+        return final_urls
+    
+    def _deep_crawl_with_cycle_detection(self, start_url: str, max_depth: int, 
+                                       visited_urls: set, current_depth: int) -> set:
+        """
+        Recursive deep crawl with cycle detection and depth tracking
+        
+        Args:
+            start_url: URL to start crawling from
+            max_depth: Maximum crawl depth (0 = no limit)
+            visited_urls: Set of already visited URLs to prevent cycles
+            current_depth: Current crawl depth
+            
+        Returns:
+            Set of discovered URLs
+        """
+        discovered_urls = set()
+        
+        # Check depth limit
+        if max_depth > 0 and current_depth >= max_depth:
+            logger.debug(f"Reached max depth {max_depth} for {start_url}")
+            return discovered_urls
+        
+        # Normalize URL for cycle detection
+        normalized_url = self._normalize_url_for_comparison(start_url)
+        
+        # Check if already visited (cycle detection)
+        if normalized_url in visited_urls:
+            logger.debug(f"Cycle detected: {start_url} already visited")
+            return discovered_urls
+        
+        # Mark as visited
+        visited_urls.add(normalized_url)
+        
+        logger.info(f"Level {current_depth + 1}: Crawling {start_url}")
+        
+        try:
+            # Extract URLs from current page
+            page_urls = self._extract_urls_from_single_page(start_url)
+            discovered_urls.update(page_urls)
+            
+            logger.info(f"Level {current_depth + 1}: Found {len(page_urls)} URLs from {start_url}")
+            
+            # Apply limits based on depth to prevent exponential explosion
+            if current_depth == 0:  # Level 1
+                crawl_limit = 20
+            elif current_depth == 1:  # Level 2  
+                crawl_limit = 10
+            else:  # Level 3+
+                crawl_limit = 5
+            
+            # Recursively crawl deeper (only category/list pages)
+            crawlable_urls = [url for url in list(page_urls)[:crawl_limit] 
+                            if self._is_potential_category_or_list_page(url)]
+            
+            logger.debug(f"Level {current_depth + 1}: {len(crawlable_urls)} URLs eligible for deeper crawl")
+            
+            for url in crawlable_urls:
+                try:
+                    deeper_urls = self._deep_crawl_with_cycle_detection(
+                        start_url=url,
+                        max_depth=max_depth,
+                        visited_urls=visited_urls,  # Share visited set
+                        current_depth=current_depth + 1
+                    )
+                    discovered_urls.update(deeper_urls)
+                    
+                except Exception as e:
+                    logger.warning(f"Error in recursive crawl for {url}: {e}")
+                    continue
+                
+        except Exception as e:
+            logger.warning(f"Error crawling {start_url}: {e}")
+        
+        return discovered_urls
+    
+    def _normalize_url_for_comparison(self, url: str) -> str:
+        """Normalize URL for cycle detection comparison"""
+        try:
+            from urllib.parse import urlparse, urlunparse
+            parsed = urlparse(url)
+            
+            # Normalize for comparison: remove query params, fragments, trailing slash
+            normalized = urlunparse((
+                parsed.scheme,
+                parsed.netloc.lower(),
+                parsed.path.rstrip('/'),
+                '', '', ''  # Remove params, query, fragment
+            ))
+            
+            return normalized
+            
+        except Exception:
+            return url.lower().rstrip('/')
+    
+    def _extract_urls_from_single_page(self, page_url: str) -> set:
+        """Extract all URLs from a single page"""
+        urls = set()
+        
+        try:
+            response = requests.get(page_url, timeout=15, headers={'User-Agent': 'DomainAnalyzer/1.0'})
+            if response.status_code == 200:
+                from lxml import html
+                doc = html.fromstring(response.content)
+                
+                # Find all links in the page
+                links = doc.cssselect('a[href]')
+                for link in links:
+                    href = link.get('href')
+                    if href:
+                        full_url = urljoin(page_url, href)
+                        # Clean URL artifacts
+                        clean_url = self._clean_url_artifacts(full_url)
+                        if self._is_valid_crawlable_url(clean_url, page_url):
+                            urls.add(clean_url)
+                            
+        except Exception as e:
+            logger.warning(f"Error extracting URLs from page {page_url}: {e}")
+        
+        return urls
+    
+    def _clean_url_artifacts(self, url: str) -> str:
+        """Clean XML artifacts and other unwanted suffixes from URLs"""
+        try:
+            # Remove common XML artifacts from RSS/XML parsing
+            artifacts = [']]></link>', ']]>', '</link>', '<![CDATA[', ']]']
+            
+            for artifact in artifacts:
+                url = url.replace(artifact, '')
+            
+            # Remove CDATA prefix if exists
+            if url.startswith('<![CDATA['):
+                url = url[9:]  # Remove '<![CDATA['
+                
+            return url.strip()
+            
+        except Exception as e:
+            logger.warning(f"Error cleaning URL artifacts from {url}: {e}")
+            return url
+    
+    def _is_potential_category_or_list_page(self, url: str) -> bool:
+        """Check if URL is likely a category/list page that should be crawled deeper"""
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(url)
+            
+            # Category/list page indicators
+            category_indicators = [
+                '/category/', '/section/', '/tag/', '/topic/',
+                '/tin-tuc/', '/thoi-su/', '/the-gioi/', '/kinh-te/',
+                '/giai-tri/', '/the-thao/', '/phap-luat/', '/giao-duc/',
+                '/suc-khoe/', '/cong-nghe/', '/oto-xe-may/',
+                '/page/', '/p/', '/trang-', '/danh-muc/'
+            ]
+            
+            url_lower = url.lower()
+            
+            # Check for category indicators
+            if any(indicator in url_lower for indicator in category_indicators):
+                return True
+            
+            # Check if URL ends with common list page patterns
+            if parsed.path.endswith(('/page', '/trang', '/p')) or '/page/' in url_lower:
+                return True
+            
+            # Check path depth - category pages usually have moderate depth
+            path_parts = [p for p in parsed.path.split('/') if p]
+            if 1 <= len(path_parts) <= 3:
+                return True
+            
+            return False
+            
+        except Exception:
+            return False
+    
+    def _is_valid_crawlable_url(self, url: str, source_url: str) -> bool:
+        """Check if URL is valid and worth crawling"""
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(url)
+            source_parsed = urlparse(source_url)
+            
+            # Must be same domain
+            if parsed.netloc != source_parsed.netloc:
+                return False
+            
+            # Skip certain patterns
+            skip_patterns = [
+                'search', 'login', 'register', 'contact', 'about',
+                'privacy', 'terms', 'sitemap.xml', 'robots.txt', 
+                'javascript:', 'mailto:', '#', '?search', '?q=',
+                '.jpg', '.png', '.gif', '.css', '.js', '.pdf',
+                'facebook.com', 'twitter.com', 'youtube.com'
+            ]
+            
+            url_lower = url.lower()
+            if any(pattern in url_lower for pattern in skip_patterns):
+                return False
+            
+            # Must have reasonable length
+            if len(url) > 300:
+                return False
+            
+            # Check for valid URL structure
+            if not (parsed.scheme in ['http', 'https'] and parsed.netloc):
+                return False
+            
+            return True
+            
+        except Exception:
+            return False
+    
+    def _clean_and_deduplicate_urls(self, urls: List[str]) -> List[str]:
+        """Clean and remove duplicate URLs"""
+        seen_urls = set()
+        clean_urls = []
+        
+        for url in urls:
+            try:
+                # Normalize URL for deduplication
+                from urllib.parse import urlparse, urlunparse
+                parsed = urlparse(url)
+                
+                # Create normalized version (remove fragments and query params for comparison)
+                normalized = urlunparse((
+                    parsed.scheme,
+                    parsed.netloc.lower(),
+                    parsed.path,
+                    '', '', ''  # Remove params, query, fragment for dedup
+                ))
+                
+                if normalized not in seen_urls:
+                    seen_urls.add(normalized)
+                    clean_urls.append(url)  # Keep original URL with query params if needed
+                    
+            except Exception:
+                continue
+        
+        return clean_urls
     
     def _extract_urls_from_sitemaps(self, sitemaps: List[str]) -> List[str]:
         """Extract article URLs from sitemaps"""

@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  url-tracking-worker:
+    build: .
+    container_name: url_tracking_worker
+    environment:
+      - DB_HOST=crawler_postgres
+      - DB_PORT=5432
+      - DB_USER=crawler_user
+      - DB_PASSWORD=crawler123
+      - DB_NAME=crawler_db
+      - MONITORING_INTERVAL_MINUTES=15
+      - BATCH_SIZE=10
+      - MAX_WORKERS=4
+      - REQUEST_TIMEOUT=30
+      - RETRY_ATTEMPTS=3
+      - LOG_LEVEL=INFO
+      - ENABLE_LOGGING=true
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - crawler_network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.append('/app'); from src.utils.database_utils import DatabaseManager; db = DatabaseManager(); exit(0 if db.connect() else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  postgres:
+    image: postgres:15
+    container_name: crawler_postgres
+    environment:
+      POSTGRES_DB: crawler_db
+      POSTGRES_USER: crawler_user
+      POSTGRES_PASSWORD: crawler123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - crawler_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crawler_user -d crawler_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  crawler_network:
+    external: true
