@@ -1,0 +1,125 @@
+{
+  "test_info": {
+    "timestamp": "2025-08-28T14:52:05.755014",
+    "test_purpose": "DOMAIN_ANALYSIS_AND_URL_EXTRACTION_TEST",
+    "domain_tested": "dantri.com.vn"
+  },
+  "domain_analysis": {
+    "domain_name": "dantri.com.vn",
+    "domain_url": "https://dantri.com.vn",
+    "success": true,
+    "rss_feeds": {
+      "count": 5,
+      "urls": [
+        "https://dantri.com.vn/rss/photo-news.rss",
+        "https://dantri.com.vn/rss/giai-tri.rss",
+        "https://dantri.com.vn/rss/xa-hoi.rss",
+        "https://tailieu.dantri.com.vn/catalog/feed",
+        "https://dantri.com.vn/rss/home.rss"
+      ]
+    },
+    "sitemaps": {
+      "count": 5,
+      "urls": [
+        "https://dantri.com.vn/sitemaps/category-sitemap.xml",
+        "https://dantri.com.vn/sitemaps/articles.xml",
+        "https://dantri.com.vn/sitemaps/Videos.xml",
+        "https://dantri.com.vn/google-news-sitemap.xml",
+        "https://dantri.com.vn/sitemaps/collection-sitemap.xml"
+      ]
+    },
+    "homepage_urls": {
+      "count": 1,
+      "urls": [
+        "https://dantri.com.vn"
+      ]
+    },
+    "category_urls": {
+      "count": 8,
+      "urls": [
+        "https://dantri.com.vn/photo-news.htm",
+        "https://dantri.com.vn/bat-dong-san.htm",
+        "https://fica.dantri.com.vn",
+        "https://tailieu.dantri.com.vn/catalog",
+        "https://dantri.com.vn/xa-hoi.htm",
+        "https://dantri.com.vn/photo-story.htm",
+        "https://dantri.com.vn/giai-tri.htm",
+        "https://dtinews.dantri.com.vn"
+      ]
+    },
+    "css_selectors": {
+      "article_title": [
+        "h1",
+        "h2",
+        ".title",
+        ".article-title"
+      ],
+      "article_content": [
+        ".article-content",
+        "article"
+      ],
+      "article_meta": [],
+      "navigation": [
+        "nav",
+        ".navigation",
+        ".menu"
+      ]
+    },
+    "analysis_errors": []
+  },
+  "url_extraction": {
+    "total_article_urls": 6115,
+    "sample_article_urls": [
+      "https://dantri.com.vn/event/chinh-truong-anh-khung-hoang-vi-brexit-3554.htm",
+      "https://dantri.com.vn/tinh-yeu-gioi-tinh/cua-hoi-mon-trong-ket-boc-hoi-toi-tim-thay-so-vang-o-noi-khong-ngo-toi-20250827082712267.htm",
+      "https://dantri.com.vn/giao-duc/bo-hoi-dong-truong-trong-cac-co-so-giao-duc-cong-lap-20250828072459266.htm",
+      "https://dantri.com.vn/event/ca-sy-chau-viet-cuong-va-cai-chet-cua-mot-co-gai-3428.htm",
+      "https://dantri.com.vn/noi-vu/chuyen-dong.htm",
+      "https://dantri.com.vn/giao-duc/nguoi-phu-nu-tro-thanh-sinh-vien-nam-nhat-o-tuoi-61-voi-ly-do-bat-ngo-20250827094008986.htm",
+      "https://dantri.com.vn/event/sac-lenh-di-tru-gay-nhieu-tranh-cai-cua-ong-trump-3175.htm",
+      "https://dantri.com.vn/lao-dong-viec-lam/nha-mang-tien-ty-bi-bao-kajiki-quat-do-dan-lang-loi-nuoc-giup-chu-vot-dua-20250826192143860.htm",
+      "https://dantri.com.vn/event/ky-hop-thu-9-qh-khoa-11-687.htm",
+      "https://dantri.com.vn/event/con-kieu-tien-chua-con-tham-nhung-lang-phi-2401.htm",
+      "https://dantri.com.vn/xa-hoi/ap-thap-nhiet-doi-hinh-thanh-huong-ve-dat-lien-nuoc-ta-20250827102056626.htm</link>",
+      "https://dantri.com.vn/the-thao/sea-games-30.htm",
+      "https://dantri.com.vn/event/tuyen-an-sieu-lua-huyen-nhu-2655.htm",
+      "https://dantri.com.vn/event/5-nguoi-tu-vong-trong-vu-chay-tiem-vang-kinh-hoang-2282.htm",
+      "https://dantri.com.vn/event/tham-hoa-song-than-dong-dat-o-samoa-va-indonesia-1340.htm",
+      "https://dantri.com.vn/suc-khoe/be-gai-nang-33kg-chao-doi-khoe-manh-tu-phoi-thai-tru-dong-hon-1-thap-ky-20250827153124960.htm</guid>",
+      "https://dantri.com.vn/giai-tri/nha-tho-nguyen-duc-hanh-chay-den-roi-con-co-bui-thom-20250820205840759.htm",
+      "https://dantri.com.vn/giao-duc/tuyen-sinh/chi-tieu-diem-chuan.htm",
+      "https://dantri.com.vn/the-thao/sea-games-31.htm",
+      "https://dantri.com.vn/suc-khoe/ngoai-than-kinh-cot-song.htm"
+    ],
+    "url_extraction_sources": {
+      "rss_feeds_available": 5,
+      "categories_available": 8,
+      "sitemaps_available": 5,
+      "homepage_available": true
+    },
+    "deduplication_info": {
+      "unique_urls": 6115,
+      "total_discovered": 6115,
+      "duplicates_removed": 0
+    }
+  },
+  "verification": {
+    "domain_analysis_checks": {
+      "rss_feeds_extracted": true,
+      "sitemaps_extracted": true,
+      "homepage_urls_extracted": true,
+      "category_urls_extracted": true,
+      "css_selectors_dynamic": false,
+      "no_analysis_errors": true
+    },
+    "url_extraction_checks": {
+      "article_urls_extracted": true,
+      "urls_from_rss": true,
+      "urls_from_categories": true,
+      "urls_from_sitemaps": true,
+      "urls_deduplicated": true,
+      "urls_are_articles": true
+    },
+    "overall_status": "EXTRACTION_PASSED_ANALYSIS_PARTIAL"
+  }
+}

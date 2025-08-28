@@ -1,0 +1,15 @@
+{
+  "test_info": {
+    "timestamp": "2025-08-28T14:51:38.096734",
+    "test_purpose": "DOMAIN_ANALYSIS_AND_URL_EXTRACTION_TEST",
+    "domain_tested": "dantri.com.vn"
+  },
+  "domain_analysis": {},
+  "url_extraction": {},
+  "verification": {
+    "domain_analysis_checks": {},
+    "url_extraction_checks": {},
+    "overall_status": "TEST_FAILED"
+  },
+  "test_error": "name 'phase1_result' is not defined"
+}

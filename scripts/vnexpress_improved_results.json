@@ -1,0 +1,18 @@
+{
+  "rss_feeds": [],
+  "sitemaps": [],
+  "homepage_urls": [
+    "https://vnexpress.net"
+  ],
+  "category_urls": [
+    "https://e.vnexpress.net",
+    "https://vnexpress.net/",
+    "https://vnexpress.net/topic/ha-noi-26482",
+    "https://vnexpress.net/topic/tp-ho-chi-minh-26483"
+  ],
+  "css_selectors": {},
+  "analysis_timestamp": 1756370314.7138371,
+  "analysis_errors": [
+    "Error analyzing domain vnexpress.net: 'NoneType' object has no attribute 'xpath'"
+  ]
+}

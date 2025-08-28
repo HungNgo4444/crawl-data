@@ -15,6 +15,7 @@ psycopg2-binary==2.9.9
 redis==5.0.1
 
 # HTML parsing and content processing
+requests==2.31.0
 beautifulsoup4==4.12.2
 lxml==4.9.4
 

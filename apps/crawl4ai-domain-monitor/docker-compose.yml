@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  crawl4ai-domain-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: crawl4ai_domain_monitor
+    ports:
+      - "8002:8002"
+    environment:
+      # Application settings
+      - DEBUG=false
+      - CRAWL_MODE=production
+      - API_HOST=0.0.0.0
+      - API_PORT=8002
+      - LOG_LEVEL=INFO
+      
+      # Database settings (connect to existing postgres)
+      - DB_CONTAINER_NAME=crawler_postgres
+      - DB_NAME=crawler_db
+      - DB_USER=crawler_user
+      - DB_PASSWORD=crawler123
+      
+      # Newspaper4k integration
+      - NEWSPAPER4K_BASE_URL=http://host.docker.internal:8001
+      - NEWSPAPER4K_TIMEOUT=30
+      - NEWSPAPER4K_MAX_RETRIES=3
+      
+      # Crawl4AI settings
+      - CRAWL4AI_BROWSER_TYPE=chromium
+      - CRAWL4AI_HEADLESS=true
+      - CRAWL4AI_STEALTH_MODE=true
+      - CRAWL4AI_RATE_LIMIT=30
+      - CRAWL4AI_TIMEOUT=30000
+      
+      # Queue settings
+      - QUEUE_MAX_SIZE=10000
+      - QUEUE_BATCH_SIZE=10
+      - QUEUE_MAX_CONCURRENT=3
+      
+      # Monitoring settings
+      - MONITORING_INTERVAL=300
+      - MONITORING_MAX_CONCURRENT=3
+      - HEALTH_CHECK_INTERVAL=60
+      
+      # Deduplication settings
+      - DEDUP_TTL_DAYS=30
+      - DEDUP_CLEANUP_INTERVAL=24
+      
+      # Performance settings
+      - MAX_MEMORY_USAGE_MB=2048
+    
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+    
+    networks:
+      - crawler-system
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8002/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  crawler-system:
+    external: true
