@@ -6,6 +6,8 @@ from typing import Dict, List, Any
 from urllib.parse import urljoin, urlparse
 import requests
 import time
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # Import newspaper4k
 from newspaper import Source, Config
@@ -24,6 +26,33 @@ class URLExtractor:
         self.config.number_threads = 1
         self.config.disable_category_cache = True
         self.worker_config = get_worker_config()
+        
+        # ✅ Setup session with retry strategy
+        self.session = self._create_session_with_retry()
+    
+    def _create_session_with_retry(self):
+        """Create HTTP session with retry strategy"""
+        session = requests.Session()
+        
+        # Define retry strategy
+        retry_strategy = Retry(
+            total=3,  # Total number of retries
+            status_forcelist=[429, 500, 502, 503, 504],  # HTTP status codes to retry
+            allowed_methods=["HEAD", "GET", "OPTIONS"],  # HTTP methods to retry (updated from method_whitelist)
+            backoff_factor=1,  # Backoff factor (1, 2, 4 seconds)
+        )
+        
+        # Mount adapter with retry strategy
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+        
+        # Set default headers
+        session.headers.update({
+            'User-Agent': 'URLTrackingWorker/2.0 (Newspaper URL Extractor)'
+        })
+        
+        return session
         
     def extract_article_urls_from_domain_data(self, domain_url: str, domain_name: str, 
                                              domain_data: Dict[str, Any]) -> List[str]:
@@ -427,7 +456,8 @@ class URLExtractor:
         urls = set()
         
         try:
-            response = requests.get(page_url, timeout=15, headers={'User-Agent': 'URLTrackingWorker/1.0'})
+            # ✅ Use session with retry strategy
+            response = self.session.get(page_url, timeout=15)
             if response.status_code == 200:
                 from lxml import html
                 doc = html.fromstring(response.content)
@@ -552,7 +582,8 @@ class URLExtractor:
         
         for sitemap_url in sitemaps:
             try:
-                response = requests.get(sitemap_url, timeout=15, headers={'User-Agent': 'URLTrackingWorker/1.0'})
+                # ✅ Use session with retry strategy
+                response = self.session.get(sitemap_url, timeout=15)
                 if response.status_code == 200:
                     from lxml import etree
                     try:
@@ -586,7 +617,8 @@ class URLExtractor:
         urls = set()
         
         try:
-            response = requests.get(homepage_url, timeout=15, headers={'User-Agent': 'URLTrackingWorker/1.0'})
+            # ✅ Use session with retry strategy
+            response = self.session.get(homepage_url, timeout=15)
             if response.status_code == 200:
                 from lxml import html
                 doc = html.fromstring(response.content)

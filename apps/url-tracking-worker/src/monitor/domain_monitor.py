@@ -21,10 +21,19 @@ class DomainMonitor:
         self.db_manager = db_manager
         self.url_extractor = url_extractor
         
-        # Conservative settings for low-spec systems (2-core, 3GB RAM)
-        self.MAX_CONCURRENT_DOMAINS = 2  # Safe for 2-core CPU
-        self.REQUEST_DELAY = 2.0         # 2 seconds between domains to be polite
-        self._domain_lock = threading.Lock()  # Thread-safe database access
+        # Optimized settings for better performance
+        self.MAX_CONCURRENT_DOMAINS = 10  # Increased concurrent processing 
+        self.REQUEST_DELAY = 0            # Removed delay for faster processing
+        # ✅ Fixed: Per-domain locking instead of global lock
+        self._domain_locks = {}
+        self._locks_lock = threading.Lock()  # Lock for the locks dictionary
+        
+    def _get_domain_lock(self, domain_id: str) -> threading.Lock:
+        """Get or create a lock for specific domain"""
+        with self._locks_lock:
+            if domain_id not in self._domain_locks:
+                self._domain_locks[domain_id] = threading.Lock()
+            return self._domain_locks[domain_id]
         
     async def monitor_all_domains(self) -> Dict[str, Any]:
         """Monitor all active domains and extract URLs with concurrent processing"""
@@ -47,7 +56,8 @@ class DomainMonitor:
         
         total_urls_found = 0
         total_urls_added = 0
-        processed_domains = 0
+        successful_domains = 0
+        failed_domains = 0
         
         # Process domains concurrently using ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=self.MAX_CONCURRENT_DOMAINS) as executor:
@@ -60,27 +70,41 @@ class DomainMonitor:
             # Process results as they complete
             for future in as_completed(future_to_domain):
                 domain = future_to_domain[future]
+                domain_name = domain.get('name', 'unknown')
+                
+                # Process result for domain
+                logger.debug(f"Processing result for domain: {domain_name}")
+                
                 try:
                     result = future.result()
-                    processed_domains += 1
-                    total_urls_found += result.get('urls_found', 0)
-                    total_urls_added += result.get('urls_added', 0)
                     
-                    logger.info(f"✅ Completed {domain['name']}: {result.get('urls_found', 0)} URLs found, {result.get('urls_added', 0)} added")
+                    if result.get('status') == 'success':
+                        successful_domains += 1
+                        total_urls_found += result.get('urls_found', 0)
+                        total_urls_added += result.get('urls_added', 0)
+                        
+                        logger.info(f"Domain {domain_name}: {result.get('urls_found', 0)} URLs found, {result.get('urls_added', 0)} added")
+                    else:
+                        failed_domains += 1
+                        error_msg = result.get('error', 'Unknown error')
+                        logger.error(f"Domain {domain_name} failed: {error_msg}")
                     
-                    # Add delay between domain completions to be polite to servers
-                    time.sleep(self.REQUEST_DELAY)
+                    # No delay - optimized for speed (removed time.sleep)
                     
                 except Exception as e:
-                    logger.error(f"❌ Error monitoring domain {domain['name']}: {e}")
+                    failed_domains += 1
+                    logger.error(f"Exception processing {domain_name}: {e}")
                     continue
         
-        logger.info(f"🎉 Concurrent monitoring completed: {processed_domains}/{len(domains)} domains processed")
+        processed_domains = successful_domains + failed_domains
+        logger.info(f"Monitoring completed: {successful_domains} successful, {failed_domains} failed, {processed_domains}/{len(domains)} total")
         
         return {
             'status': 'completed',
             'total_domains': len(domains),
             'processed_domains': processed_domains,
+            'successful_domains': successful_domains,
+            'failed_domains': failed_domains,
             'total_urls_found': total_urls_found,
             'total_urls_added': total_urls_added,
             'timestamp': datetime.now().isoformat(),
@@ -88,31 +112,28 @@ class DomainMonitor:
         }
     
     def _monitor_single_domain_sync(self, domain: Dict[str, Any]) -> Dict[str, Any]:
-        """Synchronous wrapper for monitor_single_domain for ThreadPoolExecutor"""
-        # Use asyncio to run the async method in the thread
-        loop = None
-        try:
-            # Try to get existing event loop
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            # Create new event loop for this thread
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+        """Simplified synchronous wrapper for monitor_single_domain"""
+        domain_name = domain.get('name', 'unknown')
+        
+        logger.debug(f"Processing domain: {domain_name} (Thread: {threading.current_thread().name})")
         
         try:
-            # Run the async monitoring method
-            if loop.is_running():
-                # If loop is running, use run_coroutine_threadsafe
-                future = asyncio.run_coroutine_threadsafe(self.monitor_single_domain(domain), loop)
-                return future.result()
-            else:
-                # If loop is not running, use run_until_complete
-                return loop.run_until_complete(self.monitor_single_domain(domain))
+            # ✅ Fixed: Simplified event loop management
+            # Just create a new loop and run the coroutine
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            try:
+                result = loop.run_until_complete(self.monitor_single_domain(domain))
+                return result
+            finally:
+                loop.close()  # Always close the loop
+                
         except Exception as e:
-            logger.error(f"Error in sync wrapper for domain {domain.get('name', 'unknown')}: {e}")
+            logger.error(f"Error processing domain {domain_name}: {e}")
             return {
                 'domain_id': domain.get('id', ''),
-                'domain_name': domain.get('name', 'unknown'),
+                'domain_name': domain_name,
                 'urls_found': 0,
                 'urls_added': 0,
                 'status': 'error',
@@ -125,7 +146,7 @@ class DomainMonitor:
         domain_name = domain['name']
         base_url = domain['base_url']
         
-        logger.info(f"🔍 Starting monitoring: {domain_name}")
+        logger.debug(f"Starting domain monitoring: {domain_name} (ID: {domain_id})")
         
         try:
             # Set domain context for immediate database saves during deep crawl
@@ -141,8 +162,9 @@ class DomainMonitor:
             self.url_extractor._current_domain_id = None
             self.url_extractor._current_db_manager = None
             
-            # Thread-safe database operations using lock
-            with self._domain_lock:
+            # ✅ Fixed: Per-domain locking for better concurrency
+            domain_lock = self._get_domain_lock(domain_id)
+            with domain_lock:
                 # Filter out URLs already in database (incremental crawling)
                 new_urls_only = self.db_manager.filter_new_urls_only(article_urls, domain_id)
                 
@@ -154,7 +176,7 @@ class DomainMonitor:
                 # Update monitoring timestamp
                 self.db_manager.update_monitoring_timestamp(domain_id)
             
-            logger.info(f"✅ Domain {domain_name}: found {len(article_urls)} URLs, filtered to {len(new_urls_only)} new URLs, added {urls_added} to database")
+            logger.info(f"Completed {domain_name}: {len(article_urls)} URLs found, {len(new_urls_only)} new, {urls_added} added")
             
             return {
                 'domain_id': domain_id,
@@ -165,7 +187,7 @@ class DomainMonitor:
             }
             
         except Exception as e:
-            logger.error(f"Error monitoring domain {domain_name}: {e}")
+            logger.error(f"Error monitoring {domain_name}: {e}")
             return {
                 'domain_id': domain_id,
                 'domain_name': domain_name,

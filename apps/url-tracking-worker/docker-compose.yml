@@ -5,18 +5,32 @@ services:
     build: .
     container_name: url_tracking_worker
     environment:
+      # Database configuration (per CLAUDE.md)
       - DB_HOST=crawler_postgres
       - DB_PORT=5432
       - DB_USER=crawler_user
       - DB_PASSWORD=crawler123
       - DB_NAME=crawler_db
+      
+      # Core scheduling (new monitoring options)
       - MONITORING_INTERVAL_MINUTES=15
-      - BATCH_SIZE=10
+      - MONITORING_TIMEOUT_SECONDS=840
+      
+      # Processing options
+      - USE_PURE_ASYNC=false  # Set to true for Option 2 (high performance)
+      - MAX_CONCURRENT_DOMAINS=15
+      - BATCH_SIZE=500
+      
+      # Legacy settings
       - MAX_WORKERS=4
       - REQUEST_TIMEOUT=30
       - RETRY_ATTEMPTS=3
+      
+      # Features
       - LOG_LEVEL=INFO
       - ENABLE_LOGGING=true
+      - ENABLE_GAP_DETECTION=true
+      - ENABLE_SITEMAP_MONITORING=false
     volumes:
       - ./logs:/app/logs
     networks:

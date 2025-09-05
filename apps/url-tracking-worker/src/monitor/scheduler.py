@@ -1,5 +1,5 @@
 """
-Monitoring scheduler service
+Monitoring scheduler service with timeout-based scheduling
 """
 import logging
 import asyncio
@@ -11,6 +11,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from ..utils.database_utils import DatabaseManager
 from .url_extractor import URLExtractor
 from .domain_monitor import DomainMonitor
+from .domain_monitor_async import AsyncDomainMonitor
 from ..config.worker_config import get_worker_config
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,14 @@ class MonitoringScheduler:
             
             # Initialize URL extractor and domain monitor
             url_extractor = URLExtractor()
-            self.domain_monitor = DomainMonitor(self.db_manager, url_extractor)
+            
+            # Choose monitoring implementation based on config
+            if self.config.get('use_pure_async', False):
+                logger.info("🔄 Using Pure Async Domain Monitor (Option 2)")
+                self.domain_monitor = AsyncDomainMonitor(self.db_manager, url_extractor)
+            else:
+                logger.info("🔄 Using Thread-based Domain Monitor with Timeout (Option 1)")
+                self.domain_monitor = DomainMonitor(self.db_manager, url_extractor)
             
             logger.info("Monitoring scheduler initialized successfully")
             return True
@@ -52,15 +60,20 @@ class MonitoringScheduler:
             return
         
         try:
-            # Add monitoring job
+            # Add timeout-based monitoring job (Option 1)
+            monitoring_interval = self.config['monitoring_interval_minutes']
             self.scheduler.add_job(
-                self._monitoring_job,
-                trigger=IntervalTrigger(minutes=self.config['monitoring_interval_minutes']),
+                self._monitoring_job_with_timeout,
+                trigger=IntervalTrigger(minutes=monitoring_interval),
                 id='domain_monitoring',
-                name='Domain URL Monitoring',
-                max_instances=1,  # Prevent overlapping runs
+                name='Domain URL Monitoring with Timeout',
+                max_instances=2,  # Allow 1 backup instance to prevent gaps
+                misfire_grace_time=300,  # 5 minute grace period for delayed starts
+                coalesce=True,  # Merge multiple missed runs into single execution
                 replace_existing=True
             )
+            
+            logger.info(f"Timeout-based monitoring configured: {monitoring_interval}min interval, {self.config.get('monitoring_timeout_seconds', 840)}s timeout")
             
             # Start scheduler
             self.scheduler.start()
@@ -90,8 +103,64 @@ class MonitoringScheduler:
         except Exception as e:
             logger.error(f"Error stopping scheduler: {e}")
     
+    async def _monitoring_job_with_timeout(self):
+        """Option 1: Timeout-based monitoring job to prevent gaps"""
+        job_start_time = datetime.now()
+        timeout_seconds = self.config.get('monitoring_timeout_seconds', 840)  # 14 minutes default
+        logger.info(f"🚀 Starting timeout-protected monitoring job (timeout: {timeout_seconds}s)")
+        
+        try:
+            if not self.domain_monitor:
+                logger.error("Domain monitor not initialized")
+                return
+            
+            # Run monitoring with timeout protection
+            try:
+                result = await asyncio.wait_for(
+                    self.domain_monitor.monitor_all_domains(),
+                    timeout=timeout_seconds
+                )
+                
+                # Store successful run result
+                duration = (datetime.now() - job_start_time).total_seconds()
+                self.last_run_result = {
+                    **result,
+                    'job_start_time': job_start_time.isoformat(),
+                    'job_duration': duration,
+                    'timeout_used': timeout_seconds,
+                    'completed_within_timeout': True
+                }
+                
+                logger.info(f"✅ Timeout-protected monitoring completed in {duration:.1f}s: {result}")
+                
+            except asyncio.TimeoutError:
+                duration = (datetime.now() - job_start_time).total_seconds()
+                logger.warning(f"⏰ Monitoring cycle timeout after {duration:.1f}s - ensuring next cycle runs")
+                
+                # Store timeout result but don't fail completely
+                self.last_run_result = {
+                    'status': 'timeout',
+                    'job_start_time': job_start_time.isoformat(),
+                    'job_duration': duration,
+                    'timeout_used': timeout_seconds,
+                    'completed_within_timeout': False,
+                    'message': 'Monitoring cycle exceeded timeout but next cycle will run'
+                }
+                
+        except Exception as e:
+            duration = (datetime.now() - job_start_time).total_seconds()
+            logger.error(f"💥 Error in timeout-protected monitoring job: {e}")
+            self.last_run_result = {
+                'status': 'error',
+                'error': str(e),
+                'job_start_time': job_start_time.isoformat(),
+                'job_duration': duration,
+                'timeout_used': timeout_seconds,
+                'completed_within_timeout': False
+            }
+    
     async def _monitoring_job(self):
-        """The main monitoring job executed by scheduler"""
+        """Legacy monitoring job (kept for compatibility)"""
         job_start_time = datetime.now()
         logger.info("Starting scheduled domain monitoring job")
         
